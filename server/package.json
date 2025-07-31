@@ -5,14 +5,15 @@
   "type": "module",
   "main": "server.js",
   "scripts": {
-    "start": "SET NODE_ENV=development&& nodemon server.js",
-    "start_prod": "SET NODE_ENV=production&& nodemon server.js"
+    "start": "SET NODE_ENV=development& nodemon server.js",
+    "start_prod": "SET NODE_ENV=production& nodemon server.js"
   },
   "author": "SARDAR_ZAIN (SZ)",
   "license": "ISC",
   "dependencies": {
     "dotenv": "^17.2.1",
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "mongoose": "^8.17.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"
