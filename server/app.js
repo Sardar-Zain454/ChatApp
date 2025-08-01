@@ -20,14 +20,14 @@ app.use('/api/auth', authRouter);
 
 
 
-app.use(globalErrorHandlingMiddleware); // global error handling middleware
 
 
-app.all('*', (req, res, next) => {
-    next(new CustomError(`Can't find endpoint: ${req.originalUrl} on this server!`, 404));  // invokes global error handling middleware above
+app.all(/(.*)/, (req, res, next) => {
+    return next(new CustomError(`Can't find endpoint: ${req.originalUrl} on this server!`, 404));  // invokes global error handling middleware above
 });
 
 
 
+app.use(globalErrorHandlingMiddleware); // global error handling middleware
 export { app }; // default-export app instance
 

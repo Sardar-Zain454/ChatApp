@@ -4,6 +4,7 @@
 // Handling global errors in the application during development environment.
 let devError = (error, res) => {
     // Expose as much information as possible in development environment.
+    
         res.status(error.statusCode).json({
             success: false,
             status: error.status,
@@ -11,6 +12,8 @@ let devError = (error, res) => {
             stack: error.stack,
             error: error
         });
+
+        
 }
 
 
@@ -44,6 +47,9 @@ let prodError = (error, res) => {
 
 
 const globalErrorHandlingMiddleware = (error, req, res, next) => {
+
+    // console.log("Global Error Handling Middleware Invoked");
+    
 
     error.statusCode = error.statusCode || 500 // internal server error
     error.status = error.status || 'error';
