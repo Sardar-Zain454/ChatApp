@@ -1,4 +1,4 @@
-
+import CustomError from "../Utils/CustomError.js";
 
 
 // Handling global errors in the application during development environment.
@@ -44,6 +44,28 @@ let prodError = (error, res) => {
 
 
 
+// Handling mongoose validations errors:
+
+ function handleDuplicateEmailError(error) {
+
+   let email = error.keyValue.email;
+   let message = `User with email ${email} already exists! Please try again with another email.`;
+   return new CustomError(message, 400); // 400 is bad request error code.
+
+ }
+
+ function handlingJWTExpiredError(error) {
+    let reason = error.message;
+    let message =  `${reason}! Please login again.`
+    return new CustomError(message, 401); // 401 is for ba
+ }
+
+
+ function handlingTemperedJWTError(error) {
+     return new CustomError(`Invalid token! Please login again.`, 401);
+ }
+
+
 
 
 const globalErrorHandlingMiddleware = (error, req, res, next) => {
@@ -57,6 +79,10 @@ const globalErrorHandlingMiddleware = (error, req, res, next) => {
     if(process.env.NODE_ENV == 'development') {
         devError(error, res);
     } else {
+        if(error.code === 11000) error = handleDuplicateEmailError(error);
+        if(error.name === "TokenExpiredError") error = handlingJWTExpiredError(error);
+        if(error.statusCode === 500 || error.name === "JsonWebTokenError") error = handlingTemperedJWTError(error);
+
         prodError(error, res);
     }
 

@@ -20,7 +20,7 @@ const userSchema = new Schema({
     email: {
         type: String,
         required: [true, 'Email is required'],
-        unique: [true, 'Email already exists'],
+        unique: true,
         validate: validator.isEmail,
         trim: true
     },
@@ -28,14 +28,21 @@ const userSchema = new Schema({
     password: {
         type: String,
         required: true,
-        trim: true
+        trim: true,
     },
 
     profilePic: {
         type: String,
         required: false
+    },
+
+    lastseen: {
+        type: Date,
+        default: null,
+        required: false
     }
-}, {timeStamps: true} );
+
+}, {timestamps: true} );
 
 
 let userModel = model('users', userSchema); // users collection 
