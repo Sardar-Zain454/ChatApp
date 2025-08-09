@@ -1,0 +1,240 @@
+
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap");
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css');
+
+
+* {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
+}
+
+
+
+
+.container {
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  justify-content:center;
+  align-items: center;
+}
+
+#checker {
+  background-color: red;
+  text-align: center;
+}
+
+.container-back-img {
+    background-image: url('/images/quick-chat-app-background.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    width: 100%;
+    height: 100%; 
+    position: absolute;
+    z-index: -2;
+}
+
+.container-back-color {
+    background-color: #e74c3c;
+    opacity: 0.7;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
+
+.card {
+    border-radius: 10px;
+    box-shadow: 0px 5px 10px 0px rgba(0,0,0,0.3);
+    width: 700px;
+    /* padding: 20px 0px; */
+    background-color: #ffffff;
+    padding: 10px 30px;
+}
+
+.card-title {
+  text-align: center;
+  padding: 10px;
+}
+
+.card-title h1 {
+  font-size: 26px;
+  font-weight: bold;
+}
+
+.column{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+ .form .column input{
+  width: calc(100% / 2 - 2px);  /*this will be the 50%-2 of content box only not content+padding+border if border-box is set */
+ /* min-width: 200px; this will be of total content+padding+border */
+} 
+
+
+
+.form input {
+  margin-bottom: 5px;
+  width: 100%;
+  background-color: #efefef;
+  border: none;
+  outline: none;
+  padding: 12px 20px;
+  border-radius: 4px;
+}
+
+.form button {
+  background-color: #e74c3c;
+  color: #ffffff;
+  font-size: 16px;
+  display: inline-block;
+  outline: none;
+  border-radius: 5px;
+  border: none;
+  padding: 8px 15px;
+  width: 100%;
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+.form button:hover{
+  background-color: #ff2e1a
+}
+
+.card_terms {
+  padding: 10px;
+}
+
+.card_terms input[type="checkbox"] {
+  background-color: #e2e2e2;
+}
+
+.card_terms span {
+  margin: 5px;
+  font-size: 13px;
+}
+
+.card  a {
+  color: #4796ff;
+  text-decoration: none;
+  margin-left: 5px;
+  cursor: pointer;
+}
+
+
+/* CSS FOR LOADER COMPONENET*/
+
+
+.loader-overlay{
+  position: fixed; 
+  inset: 0; 
+  background-color: rgba(231,76,60,0.7); 
+  z-index: 0; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+ 
+.loader-spinner,
+.loader-spinner::after {
+    box-sizing: border-box;
+}
+
+.loader-spinner {
+  width: 80px;
+  height: 80px;
+}
+.loader-spinner::after {
+  content: " ";
+  display: block;
+  border-radius: 50%;
+  width:  0px;
+  height: 0px;
+  margin: 8px;
+  box-sizing: border-box;
+  border: 35px solid white;
+  border-color: white transparent white transparent;
+  animation: loader-spinner 1.2s infinite;
+ }
+ 
+@keyframes loader-spinner {
+  0% {
+    transform: rotate(0);
+    animation-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19);
+  }
+  50% {
+    transform: rotate(900deg);
+    animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+  }
+  100% {
+    transform: rotate(1800deg);
+  }
+}
+
+/* HOME PAGE */
+
+.home-page{
+  background-color: #fdedec;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.main-content{
+   display: flex;
+  width: 90%;
+  margin: 10px auto;
+  padding: 10px 10px;
+  flex: 1;
+}
+
+/* Header componenet */
+
+.app-header{
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  padding: 10px 30px;
+  justify-content: space-between;
+  border-bottom: #bbb 1px solid;
+}
+
+.app-logo{
+  color: #28282B;
+  font-size: 25px;
+  font-weight: bold;
+}
+
+i{
+  margin: 0px 10px;
+}
+
+.app-user-profile{
+  display: flex;
+}
+
+.logged-user-name{
+  color: #28282B;
+  font-weight: bold;
+  padding-top: 10px;
+  padding-right: 20px;
+}
+
+.logged-user-profile-pic{
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  background-color: #e74c3c;
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+  line-height: 45px;
+}
+
+
+

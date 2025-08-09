@@ -8,10 +8,16 @@ import jwt from 'jsonwebtoken';
 
 let signup = asyncErrorHandler( async (req, res, next) => {
 
+
+
+        
         // you can also find it using userModel.findOne({email: req.body.email}); but in my schema i set that email must be unique
         // i handle mongoose valiudation error in globalErrorHandlingMiddleware.js for that
 
+        // does trimming from frontend: for all fields.
         req.body.password = await bcrypt.hash(req.body.password, 10);
+        req.body.email = req.body.email.toLowerCase();
+
         let user = await userModel.create(req.body);
 
         /*
@@ -29,19 +35,22 @@ let signup = asyncErrorHandler( async (req, res, next) => {
 
       return res.status(201).json({
           success: true,
-          message: "User created successfully!",
+          message: "User registered successfully!",
       })
       
 })
 
 let login = asyncErrorHandler ( async (req, res, next) => {
 
+
        let {email, password} = req.body;
+
+
       
        let user = await userModel.findOne({email});
 
        if(!user) {
-          return next(new CustomError(`User with email ${email} does not exists! Please signup first.`,400));
+          return next(new CustomError(`User with email ${email} does not exists! Please register first.`,400));
        }
 
        let isPasswordMatched = await bcrypt.compare(password, user.password)
@@ -51,15 +60,15 @@ let login = asyncErrorHandler ( async (req, res, next) => {
        }
 
 
-       let token = jwt.sign({userId: user._id}, process.env.SECRET_STRING, {expiresIn: '5m'});
+       let token = jwt.sign({userId: user._id}, process.env.SECRET_STRING, {expiresIn: '1d'});
 
 
 
-  res.status(200).json({
+  return res.status(200).json({
         success: true,
         message: "Login successfull!",
         token,
-      })
+      });
 
 })
 

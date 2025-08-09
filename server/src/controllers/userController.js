@@ -12,7 +12,6 @@ const getloggedUser = asyncErrorHandler(async (req, res, next) => {
         message: "Logged user fetched successfully!",
         data: loggedUser
     });
-
 });
 
 

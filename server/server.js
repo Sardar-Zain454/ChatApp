@@ -7,7 +7,7 @@ import { app } from "./app.js"; // runs the whole app.js file at once then contr
 
 
 
-const PORT = process.env.PORT_NUMBER || 3000;
+const PORT = process.env.PORT_NUMBER || 5000;
 
 app.listen(PORT, () => {
      console.log(`Server is running on http://localhost:${PORT}`);
