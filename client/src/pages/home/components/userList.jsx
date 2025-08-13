@@ -43,7 +43,7 @@ function UserList({ searchKey }) {
   let searchKEY = searchKey?.toLowerCase().trim();
 
     return(
-          allUsers
+      allUsers
           .filter((user) => {
               return (
                 (user.firstname.toLowerCase().trim().includes(searchKEY) ||
@@ -57,10 +57,10 @@ function UserList({ searchKey }) {
             <div class="user-search-filter">
                   <div class="filtered-user">
                       <div class="filter-user-display">
-                              {/* <img src={user.profilePic} alt="Profile Pic" class="user-profile-image" />  */}
-                          <div class="user-default-profile-pic">
+                              {user.profilePic && <img src={user.profilePic} alt="Profile Pic" class="user-profile-image" /> }
+                         {!user.profilePic && <div class="user-default-profile-pic">
                               {getInitials(user)}
-                          </div>
+                          </div> }
                           <div class="filter-user-details">
                               <div class="user-display-name">{getFullName(user)}</div>
                                   <div class="user-display-email">{getEmail(user)}</div>

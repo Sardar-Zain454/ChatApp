@@ -2,12 +2,15 @@
 function Search({ searchKey, setSearchKey }) {
 
 
+
+
+
   
 return (
     <div className="user-search-area">
         <input type="text"
                 className="user-search-text"
-                onChange={(e)=>{setSearchKey(e.target.value)}}
+                onChange={ e => setSearchKey(e.target.value) }
                 value = {searchKey}
                 placeholder="Search people"
                 />

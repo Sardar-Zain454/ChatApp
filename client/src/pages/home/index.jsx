@@ -10,11 +10,12 @@ import { useSelector } from "react-redux";
 // WHEN HOME IS MOUNTED/RENDERED CURRENT USERS AND ALL USERS ARE SUCCESSFULLY POPULATED.
 let Home = () => {
 
-    let {user, allUsers} = useSelector(state => state.userReducer); 
+    let {user, allUsers, allChats} = useSelector(state => state.userReducer); 
 
     useEffect(()=>{
         console.log("CURRENT USER: ", user);
         console.log("ALL USERS: ", allUsers);
+        console.log("ALL CHATS: ", allChats);
     }, []);
 
     return (

@@ -1,22 +1,24 @@
 
 import React, { useEffect, useState } from 'react';
 import  { useNavigate } from 'react-router-dom';
-import { getLoggedUser } from '../apiCalls/user.jsx';
 import toast from 'react-hot-toast';
 import { useDispatch, useSelector } from 'react-redux';
 import { showLoader, hideLoader } from '../redux/loaderSlice.jsx';
-import { setUser, setAllUsers } from '../redux/userSlice.jsx';
-import { getAllUsers } from '../apiCalls/user.jsx'; // custom name
+
+import { setUser, setAllUsers, setAllChats } from '../redux/userSlice.jsx';
+import { getAllUsers, getLoggedUser } from '../apiCalls/user.jsx'; 
+import { getAllChats } from '../apiCalls/chat.jsx'; 
 
   let ProtectedRoute = ( {children} ) => {
 
 
        let navigate = useNavigate();
-       const {user, allUsers} = useSelector(state => state.userReducer); // this is my durbeen 
+       const { user, allUsers, allChats } = useSelector(state => state.userReducer); // this is my durbeen 
+
        let dispatcher = useDispatch();
 
 
-       async function getUserDetails() {
+     async function getUserDetailsfromDB() {
          
           
            let response = null;
@@ -42,10 +44,8 @@ import { getAllUsers } from '../apiCalls/user.jsx'; // custom name
                dispatcher(hideLoader());
 
           }
-      }
-
-
-      async function getAllUsersfromDB() {
+     }
+     async function getAllUsersfromDB() {
           let response = null;
 
           try {
@@ -69,12 +69,41 @@ import { getAllUsers } from '../apiCalls/user.jsx'; // custom name
                navigate('/login');
                dispatcher(hideLoader());
           }
-      }
+     }
+     async function getCurrentUserChatsFromDB() {
+             let response = null;
+
+          try {
+                dispatcher(showLoader());
+                response = await getAllChats();
+               dispatcher(hideLoader());
+
+
+               if(response.success) {
+                    toast.success(response.message);
+                    dispatcher(setAllChats(response.data)); // action: {type: user/setAllChats, payload: [{chat1}, {chat2},....{chatN}]}
+
+               } else {
+                     toast.error(response.message);
+                     navigate('/login');
+               }
+
+          } catch (err) {
+               response.message = response.message || 'Something went wrong while  getting chats data for current user.'; //runs or works for only if above signupUser() calls causes some error.
+               toast.error(response.message);
+               navigate('/login');
+               dispatcher(hideLoader());
+          }
+     }
+
+
 
      useEffect(()=>{
         if(localStorage.getItem('token')) {
-               getUserDetails();
+               getUserDetailsfromDB();
                getAllUsersfromDB();
+               getCurrentUserChatsFromDB();
+
         } else {
            navigate('/login');
         }
@@ -87,8 +116,8 @@ import { getAllUsers } from '../apiCalls/user.jsx'; // custom name
                  THEN IT WILL SHOW OR MOUNT HOME COMPONENT AND ITS DESCENDANTS TO MAKE SURE THERE IS NO NULL POINTER EXCEPTION IF
                  HOME OR ITS CHILD ACCESSES THE STORE BEFORE IT IS POPULATED.
                */}
-            {/* {user && allUsers.length ? children : <></>} */}
-            {user && allUsers.length && children}
+            {/* {(user && allUsers && allChats) ? children : <></>} */}
+            {user && allUsers && allChats && children} {/* replacement of null,null,null with {},[],[] all these are truthy so children returns happily*/}
           </div>
 
           /*
