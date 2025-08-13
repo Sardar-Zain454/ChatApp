@@ -236,5 +236,38 @@ i{
   line-height: 45px;
 }
 
+/* sidebar component */
+.app-sidebar{
+  width: 30%;
+  padding: 0px 20px;
+}
+
+
+/* Search component */
+.user-search-area{
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.user-search-text{
+  width: 100%;
+  height: 40px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 20px;
+  color: #28282B;
+  border: #ddd 1px solid;
+}
+
+.user-search-btn{
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 25px;
+  color: #e74c3c;
+  cursor: pointer;
+}
+
 
 

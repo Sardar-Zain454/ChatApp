@@ -50,16 +50,16 @@ const Login = () => {
                 toast.success(response.message);
                 localStorage.setItem('token', response.token);
                 navigate('/');
-
             } else {
                 toast.error(response.message);
             }
-           
-         } catch(err) {
+
+        } catch(err) {
             response.message = response.message || 'Something went wrong while login!'; //runs or works for only if above signupUser() calls causes some error.
             toast.error(response.message);
             setButtonStatus(false); // if some error occur no line below await loginUser will runs here, 61 62
             dispatcher(hideLoader());
+            // button and loader can be reduxed and on and off using request, response interceptors.
 
         }
 

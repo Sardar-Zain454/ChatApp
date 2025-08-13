@@ -17,7 +17,7 @@ import ProtectedRoute from './components/ProtectedRoute.jsx';
             <Route path="/login" element={<Login />}></Route>
             <Route path="/signup" element={<Signup/>}></Route>
             {/* <Route path="*" element={<Default />}></Route> */}
-        </Routes>
+    </Routes>
   );
 }
 

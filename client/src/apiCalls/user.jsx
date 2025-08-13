@@ -16,4 +16,20 @@ let getLoggedUser = async () => {
      }
 }
 
-export { getLoggedUser };
+
+let getAllUsers = async () => {
+
+  if(!navigator.onLine) {
+        return {success: false, message: "You are offline!"}
+    }
+
+    try {
+           const response = await axiosInstance.get('/api/user/get-all-users')
+           return response.data; 
+
+    } catch (err) {
+           return err;
+    }
+}
+
+export { getLoggedUser, getAllUsers };

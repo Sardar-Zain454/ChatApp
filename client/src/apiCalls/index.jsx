@@ -14,10 +14,10 @@ function requestSuccess(request) {
     const token = localStorage.getItem('token');
     if(token) request.headers['authorization'] = `Bearer ${localStorage.getItem('token')}`;
     return request; // make sure request goes to next stack like backend
-    // try block -- backend
+    // try block --> backend
 }
 
-
+// invoke if requestSuccess causes some error or during axios configuring the request causes any error arises
 function requestError(error) {
     error.success = false;
     error.message = "Request inetrceptor error";
@@ -58,9 +58,31 @@ function responseError(error) {
 
 
 // Attaching request interceptors to axiosInstance.
+/*
+    Once request is made, configuration (url, data, customConfigs) in axiosInstance happens and then control comes to request success 
+    function and if everything is fine to that point and we return request object then request goes to backend server and if any error
+    occurs in request configuration or in request success function then control goes to request error function and from there we return
+    explict rejected promise ultimately control goes to catch block of the api call function where we can handle the rejected promise
+    with proper messaging came from request error function. and return to the application code where it is called and then we 
+    show the error message to user.
+
+*/
 axiosInstance.interceptors.request.use(requestSuccess, requestError);
 
 // Attaching response interceptors to axiosInstance.
+
+
+
+
+
+/*
+   Once respnse received from backend then control comes to response success function if status code is 2xx and then control goes back
+   to the api call try block where we can return this back to the application code where it is called and then store to the global redux
+   store and if status code is not 2xx, or any network error, cors erro, timeout error then control comes to response error function
+    and there we add extra fields to the error object and then we return the rejected promise so that the api call function catch block
+    then it will go the application code where it is called and there we can handle the error messaging and show it to the user.
+*/
+
 axiosInstance.interceptors.response.use(responseSuccess, responseError);
 
 

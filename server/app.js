@@ -17,8 +17,8 @@ const app = express();
 app.use(cors({
     origin:'http://localhost:5173',
     allowedHeaders: ['authorization', 'Content-Type'],
-    credentials: true
 }));
+
 
 app.use(express.json({limit: '100kb'})); // middleware to parses json bodies to js objects with a size limit of 100kb
 app.use(express.static(path.join('/public')));

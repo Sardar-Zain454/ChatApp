@@ -6,7 +6,7 @@ import {useSelector} from 'react-redux';
   let { user } = useSelector(state => state.userReducer); // state represent store variable in store.jsx and state.userReducer; represent pertinent initialValue (object) eventually this value injects to user variable
  
   console.log(user);
-  console.log("HEADER");
+  console.log(user.firstname);
 
   let getFullName = () => {
        let fn = user?.firstname;
@@ -28,7 +28,7 @@ import {useSelector} from 'react-redux';
        let fn = user?.firstname;
        let ln = user?.lastname;
 
-    if(!fn || !ln)  return 'AU'; // Anonymous User
+    if(!fn || !ln)  return 'AU'; 
     
     return `${fn.charAt(0).toUpperCase()}${ln.charAt(0).toUpperCase()}`;
   }
