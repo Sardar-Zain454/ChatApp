@@ -21,4 +21,24 @@ let getAllChats = async () => {
 };
 
 
-export { getAllChats };
+let createNewChat = async (newChat) => {
+
+    if(!navigator.onLine) {
+        return {
+            success: false,
+            message: "You are offline."
+        }
+    }
+
+    try {
+        const response = await axiosInstance.post(`/api/chat/create-new-chat`, newChat);
+        return response.data;
+
+    } catch (err) {
+        return err;
+    }
+
+}
+
+
+export { getAllChats, createNewChat };

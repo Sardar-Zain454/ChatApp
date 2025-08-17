@@ -1,10 +1,6 @@
 
 function Search({ searchKey, setSearchKey }) {
 
-
-
-
-
   
 return (
     <div className="user-search-area">
