@@ -5,7 +5,7 @@ import {useSelector} from 'react-redux';
  
   let { user } = useSelector(state => state.userReducer); // state represent store variable in store.jsx and state.userReducer; represent pertinent initialValue (object) eventually this value injects to user variable
  
-
+   console.log("INSIDE HEADER: ", user);
 
   let getFullName = () => {
        let fn = user?.firstname;

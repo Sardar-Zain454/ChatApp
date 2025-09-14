@@ -4,13 +4,8 @@ import axiosInstance from './index.jsx';
 
 let getAllChats = async () => {
 
-    if(!navigator.onLine) {
-        return {
-            success: false,
-            message: "You are offline."
-        };
-    }
-
+     console.log("ALL CHATS");
+     
     try {
       let response = await axiosInstance.get('/api/chat/get-all-chats');
       return response.data; //
@@ -22,13 +17,6 @@ let getAllChats = async () => {
 
 
 let createNewChat = async (newChat) => {
-
-    if(!navigator.onLine) {
-        return {
-            success: false,
-            message: "You are offline."
-        }
-    }
 
     try {
         const response = await axiosInstance.post(`/api/chat/create-new-chat`, newChat);

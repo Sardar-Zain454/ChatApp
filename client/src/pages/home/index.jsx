@@ -10,24 +10,25 @@ import ChatArea from './components/ChatArea.jsx';
 
 // WHEN HOME IS MOUNTED/RENDERED CURRENT USERS AND ALL USERS ARE SUCCESSFULLY POPULATED.
 let Home = () => {
-
-    let {user, allUsers, allChats} = useSelector(state => state.userReducer); 
-
-    useEffect(()=>{
-        console.log("CURRENT USER: ", user);
-        console.log("ALL USERS: ", allUsers);
-        console.log("ALL CHATS: ", allChats);
-    }, []);
-
+        let {user, allUsers, allChats, selectedChat} = useSelector(state => state.userReducer); 
+        // Observe teh division of home component.
     return (
         <div className="home-page">
-             <Header />
+             <Header></Header>
             <div className="main-content">
                 <Sidebar></Sidebar>
-                 <ChatArea />
+                 { selectedChat && <ChatArea /> }
             </div>
         </div>
     );
 }
-
 export default Home;
+
+    // let {user, allUsers, allChats, selectedChat} = useSelector(state => state.userReducer); 
+ 
+    // console.log(user, allUsers, allChats);
+    // useEffect(()=>{
+    //     console.log("CURRENT USER: ", user);
+    //     console.log("ALL USERS: ", allUsers);
+    //     console.log("ALL CHATS: ", allChats);
+    // }, []);

@@ -6,9 +6,7 @@ import { useDispatch } from 'react-redux';
 import { hideLoader, showLoader } from '../../../redux/loaderSlice';
 import { setAllChats, setSelectedChat } from '../../../redux/userSlice.jsx';
 import { useState } from 'react';
-
-
-
+import dayjs from 'dayjs';
 
 function UserList({ searchKey }) {
 
@@ -30,7 +28,6 @@ function UserList({ searchKey }) {
   
      return `${fname} ${lname}`;
   }
-
   let getInitials = (user) => {
        let fn = user?.firstname;
        let ln = user?.lastname;
@@ -39,7 +36,6 @@ function UserList({ searchKey }) {
     
     return `${fn.charAt(0).toUpperCase()}${ln.charAt(0).toUpperCase()}`;
   }
-
   let getEmail = (user) => {
     let email = user?.email;
     if(!email) return "no email found!";
@@ -47,7 +43,45 @@ function UserList({ searchKey }) {
     return email.toLowerCase();
   }
 
-  
+  let getLastMessageOrEmail = (user) => {
+      let chat = allChats.find(chat => {
+        return (chat.members.map(m => m._id).includes(user._id) &&
+        chat.members.map(m => m._id).includes(currentlyLoggedUser._id))
+  });
+ 
+  // chat is because if user is searched then it is not in any chat then for that we have to show email id
+  // first of all the user is in chats and secondly the other user must send him one message
+  if(chat && chat.lastMessage) {
+        let msg = chat.lastMessage.text;
+        let msgPrefix = chat.lastMessage.sender === currentlyLoggedUser._id ? "You: " : "";
+
+          if(msg.length >= 25) {
+              return msgPrefix + msg.slice(0, 26).concat("...");
+          } else {
+              return msgPrefix + msg;
+          }
+    }
+    
+    return "";
+    // let email = user?.email;
+    //   if(!email) return "no email found!";
+    // return email.toLowerCase();
+  }
+
+  let getLastMessageTimeStamp = (user) => {
+      let chat = allChats.find(chat => {
+        return (chat.members.map(m => m._id).includes(user._id) &&
+        chat.members.map(m => m._id).includes(currentlyLoggedUser._id))
+  });
+
+  if(chat && chat.lastMessage) {
+        let timestamp = chat.lastMessage.createdAt;
+        return dayjs(timestamp).format('hh:mm a');
+  } else {
+      return "";
+  }
+}
+
   async function createNewChatInDB(userId, evt) {
     evt.stopPropagation();
 
@@ -68,7 +102,6 @@ function UserList({ searchKey }) {
                 const updatedChats = [...allChats, response.data];
                 dispatcher(setAllChats(updatedChats)); // one dispatch for that component so that it will re-render
                 dispatcher(setSelectedChat(response.data)); // one dispatch for ChatArea componenet so that it will also re-render.
-
             } else {
                 toast.error(response.message);
             }
@@ -85,26 +118,24 @@ function UserList({ searchKey }) {
   async function deleteChatFromDB(evt, userId) {}
 
   function selectedUser(user) {
-
       if(selectedChat) {
           return selectedChat.members
                 .map(member => member._id)
                 .includes(user._id);
       } 
-
       return false;
-     
   }
 
+  
 
   let displaySelectedChat = (evt, userId) => {
     evt.stopPropagation();
-
     let givenChat = allChats.find(chat => 
       chat.members.map(m => m._id).includes(userId) &&
       chat.members.map(m => m._id).includes(currentlyLoggedUser._id)
     );
 
+   // if there is nothing inside the givenChat then we have to show a start chat button.
     if(givenChat) {
         dispatcher(setSelectedChat(givenChat));
     }   
@@ -112,11 +143,7 @@ function UserList({ searchKey }) {
     // if there is no schat find then for that we have show the start chat button for it.
   } 
 
-
-
-
-  let searchKEY = searchKey?.toLowerCase().trim();
-
+   let searchKEY = searchKey.toLowerCase().trim();
 
     return(
       allUsers
@@ -136,19 +163,22 @@ function UserList({ searchKey }) {
 
                         <div className = {selectedUser(user) ? 'selected-user' : "filtered-user"} >
                             <div className="filter-user-display">
+                              {/* it is a flex and it has three direct child */}
                                     {user.profilePic && <img src={user.profilePic} alt="Profile Pic" class="user-profile-image" /> }
                               {!user.profilePic && <div class={selectedUser(user) ? "user-selected-avatar" : "user-default-avatar"}>
                                     {getInitials(user)}
                                 </div> }
                                 <div class="filter-user-details">
                                     <div class="user-display-name">{getFullName(user)}</div>
-                                        <div class="user-display-email">{getEmail(user)}</div>
+                                        {/* <div class="user-display-email">{getEmail(user)}</div> */}
+                                        <div class="user-display-email" style={{ fontStyle: 'italic', marginLeft: '10px'}}>{getLastMessageOrEmail(user)}</div>
                                 </div>
+                                   <div className='last-message-timestamp'>{getLastMessageTimeStamp(user)}</div>
                                 {
                                   !allChats.some(chat => chat.members.map(m => m._id).includes(user._id)) &&
-                                  <div className="user-start-chat">
+                                  (<div className="user-start-chat">
                                         <button onClick={(event)=>{createNewChatInDB(user._id, event)}} className="user-start-chat-btn">Start Chat</button>
-                                  </div>
+                                  </div>)
                                 }
                                 {/* {
                                   allChats.some(chat => chat.members.map(m => m._id).includes(user._id)) &&
@@ -156,7 +186,6 @@ function UserList({ searchKey }) {
                                         <button onClick={(event)=>{deleteChatFromDB(user._id, event)}} className="user-start-chat-btn">Delete Chat</button>
                                   </div>
                                 } */}
-                              
                             </div>
                         </div>                        
                   </div>

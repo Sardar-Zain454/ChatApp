@@ -40,11 +40,29 @@ const userSchema = new Schema({
         type: Date,
         default: null,
         required: false
+    },
+
+    passwordChangedAt: {
+        type: Date,
+        required: false
     }
 
 }, {timestamps: true} );
 
+// defined them before creating the model.
+userSchema.methods.isPasswordChangedAfterTokenIssued = async function(JWTIssuedTimeStamp) {
+
+    if(this.passwordChangedAt) {
+        return (this.passwordChangedAt.getTime() / 1000) > JWTIssuedTimeStamp.getTime();
+    } else {
+        return false;
+    }
+}
+
+
 
 let userModel = model('users', userSchema); // users collection 
-
 export default userModel;
+
+
+

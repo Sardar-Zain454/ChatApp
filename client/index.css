@@ -10,6 +10,10 @@
         font-family: "Poppins", sans-serif;
 }
 
+body {
+  overflow-y: hidden;
+}
+
 
 
 
@@ -345,6 +349,9 @@ i{
   background-color: white;
   width: 70%;
   padding: 20px 30px;
+  display: flex;
+  flex-direction: column;
+  height: 85vh;
   border-radius: 10px;
 }
 
@@ -384,3 +391,132 @@ i{
   vertical-align: middle;
   line-height: 50px;
 } */
+
+
+/*******************************************************
+********CSS STYLES FOR CHAT AREA & CHAT INPUT***********
+********************************************************/
+.main-chat-area {
+    flex: 1;
+    overflow-y: scroll;
+    padding: 10px 20px;
+}
+
+.send-message-div{
+    position: relative;
+    margin-top: 25px;
+}
+
+.send-message-input{
+    width: 100%;
+    height: 40px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    color: #28282B;
+    border: #ddd 1px solid;
+}
+
+.send-message-btn{
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 25px;
+    color: #e74c3c;
+    cursor: pointer;
+    border: none;
+    background-color: transparent;
+}
+
+
+
+/*****************************************************
+***********CUSTOM SCROLLBAR FOR CHATAREA**************
+******************************************************/ 
+
+.main-chat-area::-webkit-scrollbar {
+    width: 5px;
+    margin-left: 10px;
+}
+
+/* Track */
+.main-chat-area::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 2px grey; 
+    border-radius: 10px;
+}
+
+/* Handle */
+.main-chat-area::-webkit-scrollbar-thumb {
+    background: #e74c3c; 
+    border-radius: 10px;
+}
+
+/* Handle on hover */
+.main-chat-area::-webkit-scrollbar-thumb:hover {
+    background: #e74c3c; 
+    
+}
+
+
+
+/*******************************************************
+***************CSS FOR CHAT MESSAGES********************
+********************************************************/
+.message-container{
+    display: flex;
+    flex-direction: column;
+}
+
+.send-message, .received-message {
+    padding: 10px 20px;
+    margin-top: 5px;
+    border-radius: 3px;
+    font-size: 14px;
+    width: fit-content; 
+}
+
+.send-message{ 
+    background-color: #e74c3c;
+    color: white;
+    margin-right: 100px;
+    border-top-right-radius: 10px;
+}
+
+.received-message{ 
+    background-color: #ddd;
+    color: #28282B;
+    margin-left: 100px;
+    border-bottom-left-radius: 10px;
+}
+
+.message-timestamp {
+  font-size: 12px;
+  font-style: italic;
+  width: fit-content;
+  font-weight: bold;
+}
+
+
+/*****************************************************
+************MEDIA QUERY FOR USER LIST*****************
+******************************************************/
+
+@media only screen and (max-width: 1000px) {
+    .filter-user-details {
+      display: none;
+    }
+    .user-search-area {
+        display: none;
+    }
+    .app-sidebar{
+        width: 15%;
+    }
+    .app-chat-area{
+        width: 85%
+    }
+}
+
+.last-message-timestamp {
+   font-size: 13px;
+}

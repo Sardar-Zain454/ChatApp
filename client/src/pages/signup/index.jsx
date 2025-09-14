@@ -1,14 +1,15 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './../../../index.css'; 
-import { toast } from 'react-hot-toast';
-import { Link } from 'react-router-dom';
-import { signupUser } from './../../apiCalls/auth.jsx';
+import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { showLoader, hideLoader } from './../../redux/loaderSlice.jsx'
+import { signupThunk } from '../../redux/userThunks.js';
 
 const Signup = () => {
 
     const dispatcher = useDispatch();
+    let navigate = useNavigate();
+    // for to achieve throtlling.
     const[buttonStatus, setButtonStatus] = useState(false);
 
      
@@ -18,6 +19,12 @@ const Signup = () => {
          email: '',
          password: ''
     });
+
+    useEffect(() => {
+        if(localStorage.getItem('token') && localStorage.getItem('token ') !== 'undefined') {
+             navigate('/');
+        }
+    }, []);
 
 
 
@@ -32,7 +39,6 @@ const Signup = () => {
     async function handleSubmit(e) {
         e.preventDefault();     
         
-        setButtonStatus(true);
         let cleanUser = {
                 firstname: user.firstname.trim(), 
                 lastname: user.lastname.trim(),
@@ -41,32 +47,38 @@ const Signup = () => {
         };
 
 
-         let response = null;
+        setButtonStatus(true);
+        dispatcher(showLoader());
+        await dispatcher(signupThunk(cleanUser)) // no way that error comes here
+        dispatcher(hideLoader());
+        setButtonStatus(false);
 
-        try{
-            dispatcher(showLoader());
-            response = await signupUser(cleanUser);
-            setButtonStatus(false);
-            dispatcher(hideLoader());
 
-           if(response.success) {
-                 toast.success(response.message);
-           } else {
-              toast.error(response.message);
-             
-           }
 
-        }catch(err) {
-            response.message = response.message || 'Something went wrong while registration!'; //runs or works for only if above signupUser() calls causes some error.
-            toast.error(response.message);
-            setButtonStatus(false); // if some error occur no line below await loginUser will runs here these two lines 61 62
-            dispatcher(hideLoader()); 
+          // REMEBERS IT:
+        // try{
+        //     dispatcher(showLoader());
+        //     response = await signupUser(cleanUser);
+        //     setButtonStatus(false);
+        //     dispatcher(hideLoader());
 
-        }
+        //    if(response.success) {
+        //          toast.success(response.message);
+        //    } else {
+        //       toast.error(response.message);
+        //    }
 
-        setUser({
-            firstname: '', lastname: '', email: '', password: ''
-        });
+        // }catch(err) {
+        //     response.message = response.message || 'Something went wrong while registration!'; //runs or works for only if above signupUser() calls causes some error.
+        //     toast.error(response.message);
+        //     setButtonStatus(false); // if some error occur no line below await loginUser will runs here these two lines 61 62
+        //     dispatcher(hideLoader()); 
+
+        // }
+
+        // setUser({
+        //     firstname: '', lastname: '', email: '', password: ''
+        // });
         
     }
     

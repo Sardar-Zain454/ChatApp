@@ -36,7 +36,8 @@ let prodError = (error, res) => {
         return res.status(error.statusCode).json({
             success: false,
             status: error.status,
-            message: "Something went wrong! Please try again later." // for all errors we have a general message.
+            message: error.message || "Internal Server Error",
+            // message: "Something went wrong! Please try again later. " // for all errors we have a general message.
         });
     }
    
@@ -56,14 +57,13 @@ let prodError = (error, res) => {
  }
 
  function handlingJWTExpiredError(error) {
-    let reason = error.message;
-    let message =  `${reason}! Please login again.`
-    return new CustomError(message, 401); // 401 is for ba
+    let message =  `JWT has expired! Please login again.`
+    return new CustomError(message, 401); // 
  }
 
 
  function handlingTemperedJWTError(error) {
-     return new CustomError(`Invalid token! Please login again.`, 401);
+     return new CustomError(`Invalid entry token! Please login again.`, 401);
  }
 
 
@@ -73,7 +73,6 @@ const globalErrorHandlingMiddleware = (error, req, res, next) => {
 
     // console.log("Global Error Handling Middleware Invoked");
     
-
     error.statusCode = error.statusCode || 500 // internal server error
     error.status = error.status || 'error';
 
@@ -82,7 +81,7 @@ const globalErrorHandlingMiddleware = (error, req, res, next) => {
     } else {
         if(error.code === 11000) error = handleDuplicateEmailError(error);
         if(error.name === "TokenExpiredError") error = handlingJWTExpiredError(error);
-        if(error.statusCode === 500 || error.name === "JsonWebTokenError") error = handlingTemperedJWTError(error);
+        if(error.name === "JsonWebTokenError") error = handlingTemperedJWTError(error);
 
         prodError(error, res);
     }

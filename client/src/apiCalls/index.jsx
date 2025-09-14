@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const axiosInstance = axios.create({
     baseURL: 'http://localhost:5000',
-    timeout: 5000, 
+    // timeout: 100, // if in 100 milliseconds the request doesnot completes whether fulfilled or rejected
     headers: {
         authorization: `Bearer ${localStorage.getItem('token')}`
     }
@@ -11,6 +11,16 @@ const axiosInstance = axios.create({
 
 
 function requestSuccess(request) {
+
+    if(!navigator.onLine) {
+        // directly goes to the catch of respective api function from there it will go the respons thunk
+        return Promise.reject({
+            success: false,
+            message: "No internet connection! 😔"
+        })
+    }
+
+
     const token = localStorage.getItem('token');
     if(token) request.headers['authorization'] = `Bearer ${localStorage.getItem('token')}`;
     return request; // make sure request goes to next stack like backend
@@ -19,6 +29,7 @@ function requestSuccess(request) {
 
 // invoke if requestSuccess causes some error or during axios configuring the request causes any error arises
 function requestError(error) {
+
     error.success = false;
     error.message = "Request inetrceptor error";
     return Promise.reject(error);
@@ -34,16 +45,20 @@ function requestError(error) {
 function responseSuccess(response) {
     // Runs only for 2xx, this function executes.
       return response;
-      // try block to previous try block
+      // try block to/of cller,  previous try block
 }
 
 // before control going to respective first come here in case of any error
 function responseError(error) {
   // Runs for any 3xx, 4xx, 5xx or any network, cors any error controls come there
   
-  let msg = error.response?.data?.message;
+  let msg = error?.response?.data?.message;
   if(error.code === "ECONNABORTED") msg = "Request timeout!";
+  if(error.code === "ERR_NETWORK") msg = "CORS + DNS + No internet or server unreachable error"
+
+   console.log("Error in response interceptor", error);
    
+
 
     error.success = false;
     error.message =  msg || error.message;

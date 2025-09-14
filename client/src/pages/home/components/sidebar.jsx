@@ -19,6 +19,5 @@ import UserList from "./userList";
       </div>
   )
 }
-
 export default Sidebar;
 

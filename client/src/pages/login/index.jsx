@@ -1,18 +1,23 @@
 
-import React, {useEffect, useState} from 'react';
+import {useState, useEffect} from 'react';
 import './../../../index.css';
-import toast from 'react-hot-toast';
-import { Link } from 'react-router-dom';
-import { loginUser } from '../../apiCalls/auth';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { hideLoader, showLoader } from './../../redux/loaderSlice.jsx';
+import { loginThunk } from '../../redux/userThunks.js';
+import { updateInitialDataFetched } from '../../redux/userSlice.jsx'; 
 
 const Login = () => {
 
     const dispatcher = useDispatch();
-    let navigate = useNavigate();
     let[buttonStatus, setButtonStatus] = useState(false);
+    let navigate = useNavigate();
+
+      useEffect(() => {
+            if(localStorage.getItem('token') && localStorage.getItem('token ') !== 'undefined') {
+                 navigate('/');
+            }
+        }, []);
 
 
    let[user, setUser] = useState({
@@ -31,37 +36,27 @@ const Login = () => {
 
     async function handleSubmit(e) {
         e.preventDefault();
-        setButtonStatus(true);
 
         let cleanUser = {
             email: user.email.trim(),
             password: user.password.trim()
         }
+            
+        setButtonStatus(true);
+        dispatcher(showLoader());
 
-        let response = null;
+        // no way that error comes her
+          await dispatcher(loginThunk(cleanUser)); // if fulfilled then only token is stored
 
-         try {
-                dispatcher(showLoader());
-                    response = await loginUser(cleanUser);
-                dispatcher(hideLoader());
-                setButtonStatus(false);
+          if(localStorage.getItem('token') && localStorage.getItem('token') !== 'undefined') {
+                // first check token if it exists or not
+                dispatcher(updateInitialDataFetched(true)); // {type: user/updateInitialDataFetched, payload: true}
+          }
 
-            if(response.success) {
-                toast.success(response.message);
-                localStorage.setItem('token', response.token);
-                navigate('/');
-            } else {
-                toast.error(response.message);
-            }
 
-        } catch(err) {
-            response.message = response.message || 'Something went wrong while login!'; //runs or works for only if above signupUser() calls causes some error.
-            toast.error(response.message);
-            setButtonStatus(false); // if some error occur no line below await loginUser will runs here, 61 62
-            dispatcher(hideLoader());
-            // button and loader can be reduxed and on and off using request, response interceptors.
+          dispatcher(hideLoader());
+          setButtonStatus(false);
 
-        }
 
         setUser({
             email: '', password: ''
@@ -87,11 +82,12 @@ const Login = () => {
             <div className="card_terms"> 
                 <span>Don't have an account yet?
                     <Link to="/signup"> 
-                       Signup Here
+                            Signup Here
                      </Link>
                 </span>
             </div>
             </div>
+
     </div>
 ) 
 
