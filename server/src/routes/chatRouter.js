@@ -1,7 +1,7 @@
 
 import { Router } from 'express';
 import authMiddleware from '../middlewares/authMiddleware.js';
-import { createNewChat, getAllChats } from '../controllers/chatController.js';
+import { createNewChat, getAllChats, clearMessages } from '../controllers/chatController.js';
 
 const chatRouter = Router();
 
@@ -13,6 +13,9 @@ chatRouter.route('/create-new-chat')
 // Note this is a protected route.
 chatRouter.route('/get-all-chats')
            .get(authMiddleware, getAllChats);
+
+chatRouter.route('/clear-unread-messages')
+              .post(authMiddleware, clearMessages);
 
 
 export default chatRouter;

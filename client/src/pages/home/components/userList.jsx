@@ -53,19 +53,19 @@ function UserList({ searchKey }) {
   // first of all the user is in chats and secondly the other user must send him one message
   if(chat && chat.lastMessage) {
         let msg = chat.lastMessage.text;
-        let msgPrefix = chat.lastMessage.sender === currentlyLoggedUser._id ? "You: " : "";
+        let msgPrefix = chat.lastMessage.sender === currentlyLoggedUser._id ? "YOU: " : "";
 
           if(msg.length >= 25) {
-              return msgPrefix + msg.slice(0, 26).concat("...");
+              return msgPrefix + msg.slice(0, 26).concat(".....");
           } else {
               return msgPrefix + msg;
           }
     }
     
-    return "";
-    // let email = user?.email;
-    //   if(!email) return "no email found!";
-    // return email.toLowerCase();
+    
+    let email = user?.email;
+      if(!email) return "no email found!";
+    return email.toLowerCase();
   }
 
   let getLastMessageTimeStamp = (user) => {
@@ -130,9 +130,10 @@ function UserList({ searchKey }) {
 
   let displaySelectedChat = (evt, userId) => {
     evt.stopPropagation();
+
     let givenChat = allChats.find(chat => 
-      chat.members.map(m => m._id).includes(userId) &&
-      chat.members.map(m => m._id).includes(currentlyLoggedUser._id)
+                chat.members.map(m => m._id).includes(userId) &&
+                chat.members.map(m => m._id).includes(currentlyLoggedUser._id)
     );
 
    // if there is nothing inside the givenChat then we have to show a start chat button.
@@ -156,7 +157,8 @@ function UserList({ searchKey }) {
                   );
           })
           .map((user) => {
-              return (
+            console.log(user);
+            return (
                   <div className='user-search-filter'
                       onClick={(event)=>{displaySelectedChat(event, user._id)}}
                       key = {user._id}>

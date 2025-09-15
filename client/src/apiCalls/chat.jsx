@@ -28,5 +28,14 @@ let createNewChat = async (newChat) => {
 
 }
 
+const clearingMessages = async ( chatId ) => {
+           try {
+            const response = await axiosInstance.post('/api/chat/clear-unread-messages', { chatId }); // if it is a simple variable then must {} otherwise if it is an object then no need of it {} ok naa!
+            return response.data;
+        }catch(err) {
+              return err;
+           }
+}
 
-export { getAllChats, createNewChat };
+
+export { getAllChats, createNewChat, clearingMessages };

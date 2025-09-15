@@ -7,7 +7,8 @@ import {
       fetchAllChatsThunk,
       signupThunk,
       sendMessageThunk,
-      fetchAllMessagesThunk
+      fetchAllMessagesThunk,
+         clearAllMessagesThunk
    } from './userThunks.js';
 import { showLoader, hideLoader } from './loaderSlice.jsx';
 
@@ -147,6 +148,25 @@ let userSlice = createSlice({
          })
          .addCase(fetchAllMessagesThunk.rejected, (state, action) => {
             // state.messages = action.payload;
+         })
+
+         builder
+         .addCase(clearAllMessagesThunk.fulfilled, (state, action) => {
+            console.log("Before");
+                           let chatIndex = state.allChats.findIndex(chat => chat._id === action.payload._id);
+                           if(chatIndex != -1) {
+                               console.log(state.allChats[chatIndex].unreadMessageCount);
+                                state.allChats[chatIndex] = action.payload;
+                           }
+                           let io = state.allChats.findIndex(chat => chat._id === action.payload._id);
+                           console.log(state.allChats[io].unreadMessageCount);
+            console.log("AFTER");
+         })
+         .addCase(clearAllMessagesThunk.pending, (state, action) => {
+            // state.messages = action.payload;
+         })
+         .addCase(clearAllMessagesThunk.rejected, (state, action) => {
+               // state.messages = action.payload;
          })
    }
 });

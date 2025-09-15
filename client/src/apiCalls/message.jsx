@@ -17,7 +17,8 @@ const fetchAllMessages = async ( chatId ) => {
         } catch(err) {
             return err;
         }
-
 }
+
+
 
 export { createNewMessage, fetchAllMessages };

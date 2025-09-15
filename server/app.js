@@ -35,9 +35,9 @@ app.use('/api/auth', authRouter);
 // ENDPOINT: 127.0.0.1:5000/api/user - /get-all-users
 app.use('/api/user', userRouter);
 
-
 // ENDPOINT: 127.0.0.1:5000/api/chat - /create-new-chat
 // ENDPOINT: 127.0.0.1:5000/api/chat - /get-all-chats
+// ENDPOINT: 127.0.0.1:5000/api/chat - /clear-unread-messages
 app.use('/api/chat', chatRouter);
 
 // ENDPOINT: 127.0.0.1:5000/api/message - /send-message

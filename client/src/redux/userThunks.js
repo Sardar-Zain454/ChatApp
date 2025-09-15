@@ -2,7 +2,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { getLoggedUser, getAllUsers } from './../apiCalls/user.jsx';
 import { loginUser, signupUser } from '../apiCalls/auth.jsx';
-import { getAllChats } from '../apiCalls/chat.jsx';
+import { getAllChats, clearingMessages } from '../apiCalls/chat.jsx';
 import { createNewMessage, fetchAllMessages } from "../apiCalls/message.jsx";
 
 import toast from 'react-hot-toast';
@@ -179,5 +179,32 @@ const fetchAllChatsThunk = createAsyncThunk('user/fetchAllChatsThunk', async (na
    }
  });
 
+  const clearAllMessagesThunk = createAsyncThunk('user/clearAllMessages',  async (chatId, { rejectWithValue } ) => {
+     let response = null;
 
-export { loginThunk, fetchUserThunk, fetchAllUsersThunk, fetchAllChatsThunk, signupThunk, sendMessageThunk, fetchAllMessagesThunk };
+   try {
+       response = await clearingMessages(chatId);
+       if(response.success) {
+         //  toast.success(response.message);
+           return response.data; 
+       } else {
+            toast.error(response.message);
+            return rejectWithValue(response.message) // backend api failure message
+       }
+   }catch(err) {
+        toast.error("Soemthing went wrong while sending the message");
+         return rejectWithValue(error.message); // frontend api crash message above line 113 error
+   }
+ });
+
+
+export {
+   loginThunk,
+   fetchUserThunk,
+   fetchAllUsersThunk,
+   fetchAllChatsThunk,
+   signupThunk,
+   sendMessageThunk,
+   fetchAllMessagesThunk,
+   clearAllMessagesThunk
+};

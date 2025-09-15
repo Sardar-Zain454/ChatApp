@@ -199,9 +199,9 @@ const FetchInitialData = () => {
   // here i think you get
   useEffect(() => {
       if(user && allUsers && allChats) {
+        dispatcher(updateInitialDataFetched(false)); // this will trigger app to re-render again. use React.memo in its child if used.
         toast.success("Login successful");
-         dispatcher(updateInitialDataFetched(false)); // this will trigger app to re-render again. use React.memo in its child if used.
-          navigate('/'); 
+        navigate('/'); 
       }
   }, [allChats]);
 

@@ -1,7 +1,7 @@
 
 import {useEffect, useState} from 'react'
 import { useSelector } from 'react-redux';
-import { sendMessageThunk, fetchAllMessagesThunk } from '../../../redux/userThunks';
+import { sendMessageThunk, fetchAllMessagesThunk, clearAllMessagesThunk } from '../../../redux/userThunks';
 import { useDispatch } from 'react-redux';
 import { showLoader, hideLoader } from '../../../redux/loaderSlice';
 import dayjs from 'dayjs';
@@ -12,7 +12,7 @@ import dayjs from 'dayjs';
 
 
  const ChatArea = () => {
-  let { selectedChat, user: loggedUser, messages } = useSelector(state => state.userReducer);
+  let { selectedChat, user: loggedUser, messages} = useSelector(state => state.userReducer);
     let dispatcher = useDispatch();
     let[message, setMessage] = useState('');
 
@@ -88,15 +88,16 @@ import dayjs from 'dayjs';
 
   }
 
-  const fetchAllMessagesFromDB = async () => {
-    dispatcher(showLoader());
-          await dispatcher(fetchAllMessagesThunk(selectedChat._id));
-    dispatcher(hideLoader());
-  }
+  const clearMessagesInDBAndFetchAllMessages = async () => {
+      dispatcher(showLoader());
+            await dispatcher(clearAllMessagesThunk(selectedChat._id)).unwrap();
+            await dispatcher(fetchAllMessagesThunk(selectedChat._id)).unwrap();
+      dispatcher(hideLoader());
+}
 
-      useEffect(() => {
-            fetchAllMessagesFromDB();
-      }, [selectedChat]);
+            useEffect(() => {
+                        clearMessagesInDBAndFetchAllMessages();
+            }, [selectedChat]);
 
   return (
     <>
