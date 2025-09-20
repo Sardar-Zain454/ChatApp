@@ -5,13 +5,11 @@ import { sendMessageThunk, fetchAllMessagesThunk, clearAllMessagesThunk } from '
 import { useDispatch } from 'react-redux';
 import { showLoader, hideLoader } from '../../../redux/loaderSlice';
 import dayjs from 'dayjs';
+import { addMessage } from '../../../redux/userSlice';
 
 
+ const ChatArea = ( { socket } ) => {
 
-
-
-
- const ChatArea = () => {
   let { selectedChat, user: loggedUser, messages} = useSelector(state => state.userReducer);
     let dispatcher = useDispatch();
     let[message, setMessage] = useState('');
@@ -72,31 +70,46 @@ import dayjs from 'dayjs';
 
 
    const sendMsg = async () => {
-
     if(message.trim() === '') return;
 
     let msg = {
               chatId: selectedChat._id,
               sender: loggedUser._id,
-              text: message.trim()
+              text: message.trim(),
     }
 
-    dispatcher(showLoader());
-    await dispatcher(sendMessageThunk(msg));
-    dispatcher(hideLoader());
-    setMessage('');
 
+      socket.emit('send-message', {
+                  ...msg,
+                  roomsToSendThatMessage: selectedChat.members.map(m => m._id),
+                  read: false,
+                  createdAt: dayjs()
+      });
+
+     await dispatcher(sendMessageThunk(msg));
+    setMessage('');
   }
 
   const clearMessagesInDBAndFetchAllMessages = async () => {
       dispatcher(showLoader());
-            await dispatcher(clearAllMessagesThunk(selectedChat._id)).unwrap();
-            await dispatcher(fetchAllMessagesThunk(selectedChat._id)).unwrap();
+            if(selectedChat?.lastMessage?.sender !== loggedUser._id) {
+                  await dispatcher(clearAllMessagesThunk(selectedChat._id));
+                  // you can also update the selected chat here.
+      }
+            await dispatcher(fetchAllMessagesThunk(selectedChat._id));
       dispatcher(hideLoader());
 }
 
             useEffect(() => {
                         clearMessagesInDBAndFetchAllMessages();
+
+                        socket
+                              .off('receive-message')
+                              .on('receive-message', (incommingMessage) => {
+                                    //  let allMessages = [...messages, incommingMessage ];
+                                    dispatcher(addMessage(incommingMessage));
+                              })
+                              
             }, [selectedChat]);
 
   return (
@@ -112,19 +125,26 @@ import dayjs from 'dayjs';
                         <div className="message-container" key={message._id} style={{alignItems: message.sender == loggedUser._id ? 'start' : 'end'}} >
                                     <div className={message.sender == loggedUser._id ? 'send-message' : 'received-message'}>{message.text}</div>
                                     {/* <div className='message-timestamp'>{moment(message.createdAt).format('HH:MM A')}</div> */}
-                                    <div className='message-timestamp'>{timeFormatter(message.createdAt)}</div>
+                                    <div className='message-timestamp'>{timeFormatter(message.createdAt)}
+                                          {
+                                                (message.sender == loggedUser._id && message.read) &&
+                                                <i className='fa fa-check-circle' aria-hidden="true" style={{color: '#e74c3c', marginLeft: '10px', border:'1px solid #e74c3c', borderRadius: '50%'}}/>
+                                          }
+                                    </div>
                               </div>
                   )
                 })}
             </div>
                       <div className="send-message-div">
-                          <input 
+
+                               <input 
                                 type="text"
                                 className="send-message-input"
                                 placeholder="Type a message..." 
                                 onChange={(e)=>{setMessage(e.target.value)}}
                                 value = {message} />
-                          <button onClick={sendMsg} className="fa fa-paper-plane send-message-btn" aria-hidden="true"></button>
+                           <button onClick={sendMsg} type="button" className="fa fa-paper-plane send-message-btn" aria-hidden="true"></button>
+                    
                       </div>
         </div>
     </>

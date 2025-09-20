@@ -42,7 +42,6 @@ function UserList({ searchKey }) {
 
     return email.toLowerCase();
   }
-
   let getLastMessageOrEmail = (user) => {
       let chat = allChats.find(chat => {
         return (chat.members.map(m => m._id).includes(user._id) &&
@@ -67,7 +66,6 @@ function UserList({ searchKey }) {
       if(!email) return "no email found!";
     return email.toLowerCase();
   }
-
   let getLastMessageTimeStamp = (user) => {
       let chat = allChats.find(chat => {
         return (chat.members.map(m => m._id).includes(user._id) &&
@@ -81,7 +79,6 @@ function UserList({ searchKey }) {
       return "";
   }
 }
-
   async function createNewChatInDB(userId, evt) {
     evt.stopPropagation();
 
@@ -113,10 +110,6 @@ function UserList({ searchKey }) {
           }
 
   };
-
-
-  async function deleteChatFromDB(evt, userId) {}
-
   function selectedUser(user) {
       if(selectedChat) {
           return selectedChat.members
@@ -125,9 +118,6 @@ function UserList({ searchKey }) {
       } 
       return false;
   }
-
-  
-
   let displaySelectedChat = (evt, userId) => {
     evt.stopPropagation();
 
@@ -144,20 +134,41 @@ function UserList({ searchKey }) {
     // if there is no schat find then for that we have show the start chat button for it.
   } 
 
-   let searchKEY = searchKey.toLowerCase().trim();
+  let showUnReadMessageCount =  (userId) => {
+
+      let givenChat = allChats.find(chat => 
+                chat.members.map(m => m._id).includes(userId) &&
+                chat.members.map(m => m._id).includes(currentlyLoggedUser._id)
+    );
+
+    if(givenChat && givenChat.unreadMessageCount && givenChat?.lastMessage?.sender !== currentlyLoggedUser._id) {
+            return <div className='unread-message-count'>{givenChat.unreadMessageCount}</div>
+    } 
+      return "";
+  }
+  async function deleteChatFromDB(evt, userId) {}
+  let searchKEY = searchKey.toLowerCase().trim();
+
+    function getData() {
+        if(searchKEY === "") {
+            return allChats; // returns as in ascedning order. and chats contains users 
+        } else {
+            return (allUsers.filter((user) => {
+                    return (user.firstname.toLowerCase().trim().includes(searchKEY) ||
+                    user.lastname.toLowerCase().trim().includes(searchKEY) ||
+                    (user.firstname+" "+user.lastname).toLowerCase().trim().includes(searchKEY))
+            }))
+        }
+    }
+
 
     return(
-      allUsers
-          .filter((user) => {
-                  return (
-                    ( (user.firstname.toLowerCase().trim().includes(searchKEY) ||
-                    user.lastname.toLowerCase().trim().includes(searchKEY) ||
-                    (user.firstname+" "+user.lastname).toLowerCase().trim().includes(searchKEY)) &&
-                    searchKEY) || allChats.some(chat => chat.members.map(m => m._id).includes(user._id))
-                  );
-          })
-          .map((user) => {
-            console.log(user);
+       getData().map((objData) => {
+          let user = objData;
+        if(objData.members) {
+            user = objData.members.find(member => member._id !== currentlyLoggedUser._id);
+        }
+
             return (
                   <div className='user-search-filter'
                       onClick={(event)=>{displaySelectedChat(event, user._id)}}
@@ -167,7 +178,7 @@ function UserList({ searchKey }) {
                             <div className="filter-user-display">
                               {/* it is a flex and it has three direct child */}
                                     {user.profilePic && <img src={user.profilePic} alt="Profile Pic" class="user-profile-image" /> }
-                              {!user.profilePic && <div class={selectedUser(user) ? "user-selected-avatar" : "user-default-avatar"}>
+                              {!user.profilePic && <div className={selectedUser(user) ? "user-selected-avatar" : "user-default-avatar"}>
                                     {getInitials(user)}
                                 </div> }
                                 <div class="filter-user-details">
@@ -175,19 +186,16 @@ function UserList({ searchKey }) {
                                         {/* <div class="user-display-email">{getEmail(user)}</div> */}
                                         <div class="user-display-email" style={{ fontStyle: 'italic', marginLeft: '10px'}}>{getLastMessageOrEmail(user)}</div>
                                 </div>
-                                   <div className='last-message-timestamp'>{getLastMessageTimeStamp(user)}</div>
+                                   <div style={{position: 'relative'}}>
+                                    <div className='last-message-timestamp'>{getLastMessageTimeStamp(user)}</div>
+                                        {showUnReadMessageCount(user._id)}
+                                   </div>
                                 {
                                   !allChats.some(chat => chat.members.map(m => m._id).includes(user._id)) &&
                                   (<div className="user-start-chat">
                                         <button onClick={(event)=>{createNewChatInDB(user._id, event)}} className="user-start-chat-btn">Start Chat</button>
                                   </div>)
                                 }
-                                {/* {
-                                  allChats.some(chat => chat.members.map(m => m._id).includes(user._id)) &&
-                                  <div className="user-start-chat">
-                                        <button onClick={(event)=>{deleteChatFromDB(user._id, event)}} className="user-start-chat-btn">Delete Chat</button>
-                                  </div>
-                                } */}
                             </div>
                         </div>                        
                   </div>

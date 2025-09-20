@@ -2,7 +2,8 @@
 import express from "express";
 import path from 'path';
 import globalErrorHandlingMiddleware from "./src/middlewares/globalErrorHandlingMiddleware.js";
-
+import { Server } from 'socket.io';
+import http from 'http';
 import CustomError from "./src/Utils/CustomError.js";
 
 import authRouter from './src/routes/authRoutes.js';
@@ -13,12 +14,36 @@ import cors from 'cors';
 
 const app = express();
 
+let corsConfiguration = {
+            origin:'http://localhost:5173',
+            allowedHeaders: ['authorization', 'Content-Type'],
+            methods: ["GET", "POST", "PATCH", "DELETE", "PUT"]
+}; 
+
+app.use(cors(corsConfiguration));
+
+const server = http.createServer(app); // pass express app that explicit server which handles both express http req + websocket req
+
+const io = new Server(server, { // bow io knows the server above 
+    cors: corsConfiguration
+})
 
 
-app.use(cors({
-    origin:'http://localhost:5173',
-    allowedHeaders: ['authorization', 'Content-Type'],
-}));
+io.on('connection', (socket) => {
+    socket.on('join-chat-room', (userId) => {
+      socket.join(userId); // each user have its own room in which he exists separately, // if name is same everyone is added to same grp
+    console.log('User joined', userId);
+});
+
+    socket.on('send-message', (message) => {
+        console.log(message);
+          io
+            .to(message.roomsToSendThatMessage[0]) // to the group of the user who send the message
+            .to(message.roomsToSendThatMessage[1]) // to the group of the user to which message is sent
+            .emit('receive-message', message) // emitting event only for these two groups from a pool of connected user groups
+    });
+ 
+});
 
 
 app.use(express.json({limit: '100kb'})); // middleware to parses json bodies to js objects with a size limit of 100kb
@@ -58,5 +83,5 @@ app.all(/(.*)/, (req, res, next) => {
 
 
 app.use(globalErrorHandlingMiddleware); // global error handling middleware
-export { app }; // default-export app instance
+export { server }; // default-export app instance
 

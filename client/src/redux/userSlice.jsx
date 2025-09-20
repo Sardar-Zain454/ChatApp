@@ -29,6 +29,10 @@ let userSlice = createSlice({
 
     reducers: { // contains stte updater functions
 
+       addMessage: (state, action) => {
+             state.messages = [...state.messages, action.payload];
+       },
+
          setUser: (state, action) => {
             state.user = action.payload;
          },
@@ -141,6 +145,7 @@ let userSlice = createSlice({
 
          builder
          .addCase(fetchAllMessagesThunk.fulfilled, (state, action) => {
+            console.log(action);
             state.messages = action.payload;
          })
          .addCase(fetchAllMessagesThunk.pending, (state, action) => {
@@ -152,15 +157,10 @@ let userSlice = createSlice({
 
          builder
          .addCase(clearAllMessagesThunk.fulfilled, (state, action) => {
-            console.log("Before");
                            let chatIndex = state.allChats.findIndex(chat => chat._id === action.payload._id);
                            if(chatIndex != -1) {
-                               console.log(state.allChats[chatIndex].unreadMessageCount);
                                 state.allChats[chatIndex] = action.payload;
                            }
-                           let io = state.allChats.findIndex(chat => chat._id === action.payload._id);
-                           console.log(state.allChats[io].unreadMessageCount);
-            console.log("AFTER");
          })
          .addCase(clearAllMessagesThunk.pending, (state, action) => {
             // state.messages = action.payload;
@@ -171,6 +171,6 @@ let userSlice = createSlice({
    }
 });
 
- export const { setUser, setAllUsers, setAllChats, setSelectedChat, updateInitialDataFetched } = userSlice.actions; // state updater functions.
+ export const { setUser, setAllUsers, setAllChats, setSelectedChat, updateInitialDataFetched, addMessage } = userSlice.actions; // state updater functions.
  export default userSlice.reducer; // this represents the initialValue object of pertinent slice like initial value object 
  
