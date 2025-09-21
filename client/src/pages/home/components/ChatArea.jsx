@@ -107,10 +107,20 @@ import { addMessage } from '../../../redux/userSlice';
                               .off('receive-message')
                               .on('receive-message', (incommingMessage) => {
                                     //  let allMessages = [...messages, incommingMessage ];
-                                    dispatcher(addMessage(incommingMessage));
+                                    if(incommingMessage.chatId === selectedChat._id) {
+                                                dispatcher(addMessage(incommingMessage));
+                                    }
                               })
                               
             }, [selectedChat]);
+
+
+            useEffect(() => {
+                  const msgContainer = document.getElementById('main-chat-area');
+                  msgContainer.scrollTop =  msgContainer.scrollHeight;
+            }, [messages]);
+
+
 
   return (
     <>
@@ -119,7 +129,7 @@ import { addMessage } from '../../../redux/userSlice';
                 {getFullName()}
             </div>
             {/* All messages exist there below ... */}
-            <div className='main-chat-area'>
+            <div className='main-chat-area' id="main-chat-area">
                   {messages && messages?.map((message)=>{
                         return (
                         <div className="message-container" key={message._id} style={{alignItems: message.sender == loggedUser._id ? 'start' : 'end'}} >
