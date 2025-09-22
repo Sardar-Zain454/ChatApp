@@ -142,7 +142,6 @@ let userSlice = createSlice({
 
          builder
          .addCase(fetchAllMessagesThunk.fulfilled, (state, action) => {
-            console.log(action);
             state.messages = action.payload;
          })
          .addCase(fetchAllMessagesThunk.pending, (state, action) => {

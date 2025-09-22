@@ -10,7 +10,7 @@ import dayjs from 'dayjs';
 import store from './../../../redux/store.jsx';
 
 function UserList({ searchKey, socket }) {
-
+  let id;
   let dispatcher = useDispatch();
   let { user: currentlyLoggedUser, allUsers, allChats, selectedChat } = useSelector(state => state.userReducer); // state represent store variable in store.jsx and state.userReducer; represent pertinent initialValue (object) eventually this value injects to user variable
 
@@ -156,7 +156,7 @@ function UserList({ searchKey, socket }) {
 
                   let chatsCopy = store.getState().userReducer.allChats;
                   let currentChat = store.getState().userReducer.selectedChat;
-                  let loginUser = store.getState().userReducer.user;
+                  // let loginUser = store.getState().userReducer.user;
 
                   let chatIndex = -1, newCh;
                           let updatedChats = chatsCopy.map((chat, index) => {
@@ -180,8 +180,29 @@ function UserList({ searchKey, socket }) {
 
                              dispatcher(setAllChats(updatedChats));
                     }) // end of on
-                          
                           // dispatcher(setSelectedChat())
+
+          socket
+          .off('showing-typing-status')
+          .on('showing-typing-status', (userInfo)=>{
+            if(userInfo?.toWhichStatusShowing?._id === currentlyLoggedUser?._id) {
+                if(id) {
+                    clearTimeout(id);
+                }
+                  let typingElement = document.getElementById('typing-status');
+                 typingElement.innerText = "typing..."
+                 typingElement.classList.add('style-me-please');
+
+                  id = setTimeout(()=>{
+                        let lastMsg = getLastMessageOrEmail({_id: userInfo?.toWhichStatusShowing?._id});
+                            typingElement.innerText = lastMsg;
+                            typingElement.classList.remove('style-me-please');
+                 }, 1000);
+            
+            }
+
+
+          });
       },[]);
 
   let searchKEY = searchKey.toLowerCase().trim();
@@ -221,7 +242,7 @@ function UserList({ searchKey, socket }) {
                                 <div class="filter-user-details">
                                     <div class="user-display-name">{getFullName(user)}</div>
                                         {/* <div class="user-display-email">{getEmail(user)}</div> */}
-                                        <div class="user-display-email" style={{ fontStyle: 'italic', marginLeft: '10px'}}>{getLastMessageOrEmail(user)}</div>
+                                        <div class="user-display-email" style={{ fontStyle: 'italic', marginLeft: '10px'}} id="typing-status">{getLastMessageOrEmail(user)}</div>
                                 </div>
                                    <div style={{position: 'relative'}}>
                                     <div className='last-message-timestamp'>{getLastMessageTimeStamp(user)}</div>

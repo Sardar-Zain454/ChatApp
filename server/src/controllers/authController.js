@@ -39,7 +39,6 @@ let signup = asyncErrorHandler( async (req, res, next) => {
 
 let login = asyncErrorHandler ( async (req, res, next) => {
       
-      console.log("00000000000000000000000 login 0000000000000000000000000");
   
        let {email, password} = req.body;      
        let user = await userModel.findOne({email});

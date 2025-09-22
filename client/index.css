@@ -371,12 +371,14 @@ i{
 ********CSS FOR SELECTED USER***************************
 ********************************************************/
 
-.selected-user{
-  border-bottom: #ccc 1px solid;
-  padding: 10px 10px;
-  color: white;
-  cursor: pointer;
-  background-color: #e74c3c;
+.selected-user {
+    border-bottom: #ccc 1px solid;
+    padding: 10px 10px;
+    color: white;
+    cursor: pointer;
+    background-color: #e74c3c;
+    border-radius: 15px;
+    margin-block: 5px;
 }
 
 /* .selected-user-avatar{
@@ -533,4 +535,10 @@ i{
    background-color: red;
    color: white;
    font-weight: bold;
+}
+
+.style-me-please {
+    color: rgb(21, 110, 21);
+    font-weight: bold;
+    font-style: oblique;
 }

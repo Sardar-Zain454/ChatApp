@@ -80,60 +80,67 @@ import store from '../../../redux/store';
     }
 
 
-      socket.emit('send-message', {
+     await dispatcher(sendMessageThunk(msg));
+
+       socket.emit('send-message', {
                   ...msg,
                   roomsToSendThatMessage: selectedChat.members.map(m => m._id),
                   read: false,
                   createdAt: dayjs()
       });
 
-     await dispatcher(sendMessageThunk(msg));
     setMessage('');
   }
 
    const clearMessagesInDBAndFetchAllMessages = async (lastMessageSender) => {
-      lastMessageSender = lastMessageSender ?? selectedChat?.lastMessage?.sender;
 
-      dispatcher(showLoader());
-         console.log('WHO this '+lastMessageSender);
+      // dispatcher(showLoader());
             if(lastMessageSender !== loggedUser._id) {
-                  
-                        await dispatcher(clearAllMessagesThunk(selectedChat._id));
+                  // first wait for message clearance at backend then tell the sender that i cleared please re-fetch for that
+                  // chatId
+                        await dispatcher(clearAllMessagesThunk(selectedChat._id)); //
+                        // i must tell the sender that i seen it
                         socket.emit('get-read-status', {
-                                    chatId: selectedChat._id,
-                                    target: lastMessageSender
+                                    chatId: selectedChat._id, // for the chat the sender have to fetch the messages
+                                    target: lastMessageSender // room to which info for updated message fetching  is shared 
                               }
                         );
-      }
+            }
             await dispatcher(fetchAllMessagesThunk(selectedChat._id));
-      dispatcher(hideLoader());
+      // dispatcher(hideLoader());
 }
 
             useEffect(() => {
-                  clearMessagesInDBAndFetchAllMessages(null);
+                  let LMS = selectedChat?.lastMessage?.sender;
+                  clearMessagesInDBAndFetchAllMessages(LMS);
 
                         socket
                               .off('receive-message')
                               .on('receive-message', (incommingMessage) => {
-                               let currentChat = store.getState().userReducer.selectedChat;
-                               let loginUser = store.getState().userReducer.user;
+                               let currentChat = store.getState().userReducer.selectedChat; // zain laiba
+                               let loginUser = store.getState().userReducer.user; // zain
 
                                      if(incommingMessage?.chatId === currentChat?._id) {
                                                 dispatcher(addMessage(incommingMessage));
 
                                      if(incommingMessage.sender !== loginUser?._id) {
-                                               setTimeout(()=>{
+                                          // i must tell the sender that i seen it
                                                     clearMessagesInDBAndFetchAllMessages(incommingMessage.sender);
-                                               }, 200);
                                      } 
                               }
                               });
 
 
             // Always listen for the process who send the message.
-            socket.on('show-read-status', (chatInformation) => {
-                    dispatcher(fetchAllMessagesThunk(chatInformation.chatId));
+            socket.off('show-read-status').on('show-read-status', (chatInformation) => {
+                        let currentChat = store.getState().userReducer.selectedChat;
+
+                  if(chatInformation.chatId === currentChat._id) {
+                              dispatcher(fetchAllMessagesThunk(chatInformation.chatId));
+                  } 
             });
+
+            
             }, [selectedChat]);
 
 
@@ -143,7 +150,10 @@ import store from '../../../redux/store';
                   msgContainer.scrollTop =  msgContainer.scrollHeight;
             }, [messages]);
 
-
+    let handleMessageChange = (e) => {
+        setMessage(e.target.value);
+        socket.emit('typing', {toWhichStatusShowing: selectedChat?.members?.find(m => m?._id !== loggedUser?._id)});
+    }
 
   return (
     <>
@@ -174,7 +184,7 @@ import store from '../../../redux/store';
                                 type="text"
                                 className="send-message-input"
                                 placeholder="Type a message..." 
-                                onChange={(e)=>{setMessage(e.target.value)}}
+                                onChange={handleMessageChange}
                                 value = {message} />
                            <button onClick={sendMsg} type="button" className="fa fa-paper-plane send-message-btn"></button>
                     

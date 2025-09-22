@@ -45,13 +45,10 @@ const clearMessages = asyncErrorHandler( async (req, res, next) => {
                      {new: true}
               ).populate('members lastMessage');
 
-              console.log(updatedChat);
 
   // 2. we nedd to update read property to true for all messages in messages collection.
               await messageModel.updateMany({chatId: chatId, read: false},
                                                  {$set: {read: true}});
-
-              console.log('SUCESS --------------------------------------------- SUCCESS');
 
                      res.status(200).json({
                            message: 'Messages cleared successfully!',

@@ -22,6 +22,7 @@ let devError = (error, res) => {
 // Handling global errors in the application during production environment. operational environment.
 let prodError = (error, res) => {
 
+    // if it is operational then it is emitted by me zain programmer
     if(error.isOperational) {
         // error which we invoke manually (predictable) in the application using customError class these are (operational errors).
         return res.status(error.statusCode).json({
@@ -40,7 +41,6 @@ let prodError = (error, res) => {
             // message: "Something went wrong! Please try again later. " // for all errors we have a general message.
         });
     }
-   
 }
 
 
@@ -79,6 +79,7 @@ const globalErrorHandlingMiddleware = (error, req, res, next) => {
     if(process.env.NODE_ENV == 'development') {
         devError(error, res);
     } else {
+        // means the environment is the production environment.
         if(error.code === 11000) error = handleDuplicateEmailError(error);
         if(error.name === "TokenExpiredError") error = handlingJWTExpiredError(error);
         if(error.name === "JsonWebTokenError") error = handlingTemperedJWTError(error);

@@ -47,12 +47,19 @@ io.on('connection', (socket) => {
                 .emit('show-unread-message', message) // emitting event only for these two groups from a pool of connected user groups
         });
 
-            socket.on('get-read-status', targetInfo => {
+    socket.on('get-read-status', targetInfo => {
+            socket
+                .to(targetInfo.target)
+                .emit('show-read-status', targetInfo);
+        });
 
-                socket
-                    .to(targetInfo.target)
-                    .emit('show-read-status', targetInfo);
-            });
+    socket.on('typing', (userInfo)=>{
+            io
+            .to(userInfo.toWhichStatusShowing._id)
+            .emit('showing-typing-status', userInfo);
+            })
+    
+    
 });
 
 
