@@ -5,12 +5,13 @@ import { sendMessageThunk, fetchAllMessagesThunk, clearAllMessagesThunk } from '
 import { useDispatch } from 'react-redux';
 import { showLoader, hideLoader } from '../../../redux/loaderSlice';
 import dayjs from 'dayjs';
-import { addMessage } from '../../../redux/userSlice';
+import { addMessage, setAllChats } from '../../../redux/userSlice';
+import store from '../../../redux/store';
 
 
  const ChatArea = ( { socket } ) => {
 
-  let { selectedChat, user: loggedUser, messages} = useSelector(state => state.userReducer);
+  let { selectedChat, user: loggedUser, messages, allChats} = useSelector(state => state.userReducer);
     let dispatcher = useDispatch();
     let[message, setMessage] = useState('');
 
@@ -90,29 +91,51 @@ import { addMessage } from '../../../redux/userSlice';
     setMessage('');
   }
 
-  const clearMessagesInDBAndFetchAllMessages = async () => {
+   const clearMessagesInDBAndFetchAllMessages = async (lastMessageSender) => {
+      lastMessageSender = lastMessageSender ?? selectedChat?.lastMessage?.sender;
+
       dispatcher(showLoader());
-            if(selectedChat?.lastMessage?.sender !== loggedUser._id) {
-                  await dispatcher(clearAllMessagesThunk(selectedChat._id));
-                  // you can also update the selected chat here.
+         console.log('WHO this '+lastMessageSender);
+            if(lastMessageSender !== loggedUser._id) {
+                  
+                        await dispatcher(clearAllMessagesThunk(selectedChat._id));
+                        socket.emit('get-read-status', {
+                                    chatId: selectedChat._id,
+                                    target: lastMessageSender
+                              }
+                        );
       }
             await dispatcher(fetchAllMessagesThunk(selectedChat._id));
       dispatcher(hideLoader());
 }
 
             useEffect(() => {
-                        clearMessagesInDBAndFetchAllMessages();
+                  clearMessagesInDBAndFetchAllMessages(null);
 
                         socket
                               .off('receive-message')
                               .on('receive-message', (incommingMessage) => {
-                                    //  let allMessages = [...messages, incommingMessage ];
-                                    if(incommingMessage.chatId === selectedChat._id) {
+                               let currentChat = store.getState().userReducer.selectedChat;
+                               let loginUser = store.getState().userReducer.user;
+
+                                     if(incommingMessage?.chatId === currentChat?._id) {
                                                 dispatcher(addMessage(incommingMessage));
-                                    }
-                              })
-                              
+
+                                     if(incommingMessage.sender !== loginUser?._id) {
+                                               setTimeout(()=>{
+                                                    clearMessagesInDBAndFetchAllMessages(incommingMessage.sender);
+                                               }, 200);
+                                     } 
+                              }
+                              });
+
+
+            // Always listen for the process who send the message.
+            socket.on('show-read-status', (chatInformation) => {
+                    dispatcher(fetchAllMessagesThunk(chatInformation.chatId));
+            });
             }, [selectedChat]);
+
 
 
             useEffect(() => {
@@ -141,7 +164,7 @@ import { addMessage } from '../../../redux/userSlice';
                                                 <i className='fa fa-check-circle' aria-hidden="true" style={{color: '#e74c3c', marginLeft: '10px', border:'1px solid #e74c3c', borderRadius: '50%'}}/>
                                           }
                                     </div>
-                              </div>
+                        </div>
                   )
                 })}
             </div>
@@ -153,7 +176,7 @@ import { addMessage } from '../../../redux/userSlice';
                                 placeholder="Type a message..." 
                                 onChange={(e)=>{setMessage(e.target.value)}}
                                 value = {message} />
-                           <button onClick={sendMsg} type="button" className="fa fa-paper-plane send-message-btn" aria-hidden="true"></button>
+                           <button onClick={sendMsg} type="button" className="fa fa-paper-plane send-message-btn"></button>
                     
                       </div>
         </div>

@@ -31,7 +31,7 @@ let Home = () => {
         <div className="home-page">
              <Header></Header>
                 <div className="main-content">
-                    <Sidebar></Sidebar>
+                    <Sidebar socket = { socket }></Sidebar>
                     { selectedChat && <ChatArea socket = { socket } /> }
                 </div>
         </div>

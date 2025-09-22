@@ -51,6 +51,8 @@ const clearMessages = asyncErrorHandler( async (req, res, next) => {
               await messageModel.updateMany({chatId: chatId, read: false},
                                                  {$set: {read: true}});
 
+              console.log('SUCESS --------------------------------------------- SUCCESS');
+
                      res.status(200).json({
                            message: 'Messages cleared successfully!',
                            success: true,

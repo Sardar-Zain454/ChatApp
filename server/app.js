@@ -36,13 +36,23 @@ io.on('connection', (socket) => {
 });
 
     socket.on('send-message', (message) => {
-        console.log(message);
-          io
-            .to(message.roomsToSendThatMessage[0]) // to the group of the user who send the message
-            .to(message.roomsToSendThatMessage[1]) // to the group of the user to which message is sent
-            .emit('receive-message', message) // emitting event only for these two groups from a pool of connected user groups
-    });
- 
+            io
+                .to(message.roomsToSendThatMessage[0]) // to the group of the user who send the message
+                .to(message.roomsToSendThatMessage[1]) // to the group of the user to which message is sent
+                .emit('receive-message', message) // emitting event only for these two groups from a pool of connected user groups
+            
+            io
+                .to(message.roomsToSendThatMessage[0]) // to the group of the user who send the message
+                .to(message.roomsToSendThatMessage[1]) // to the group of the user to which message is sent
+                .emit('show-unread-message', message) // emitting event only for these two groups from a pool of connected user groups
+        });
+
+            socket.on('get-read-status', targetInfo => {
+
+                socket
+                    .to(targetInfo.target)
+                    .emit('show-read-status', targetInfo);
+            });
 });
 
 

@@ -5,10 +5,11 @@ import toast from 'react-hot-toast';
 import { useDispatch } from 'react-redux';
 import { hideLoader, showLoader } from '../../../redux/loaderSlice';
 import { setAllChats, setSelectedChat } from '../../../redux/userSlice.jsx';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import dayjs from 'dayjs';
+import store from './../../../redux/store.jsx';
 
-function UserList({ searchKey }) {
+function UserList({ searchKey, socket }) {
 
   let dispatcher = useDispatch();
   let { user: currentlyLoggedUser, allUsers, allChats, selectedChat } = useSelector(state => state.userReducer); // state represent store variable in store.jsx and state.userReducer; represent pertinent initialValue (object) eventually this value injects to user variable
@@ -147,6 +148,42 @@ function UserList({ searchKey }) {
       return "";
   }
   async function deleteChatFromDB(evt, userId) {}
+
+      useEffect(()=>{
+           socket
+             .off('show-unread-message')
+             .on('show-unread-message', (incommingMessage) => {
+
+                  let chatsCopy = store.getState().userReducer.allChats;
+                  let currentChat = store.getState().userReducer.selectedChat;
+                  let loginUser = store.getState().userReducer.user;
+
+                  let chatIndex = -1, newCh;
+                          let updatedChats = chatsCopy.map((chat, index) => {
+                                  if(chat._id === incommingMessage.chatId) {
+                                      chatIndex = index;
+                                           newCh = { ...chat }
+                                           newCh['lastMessage'] = incommingMessage;
+
+                                      if(incommingMessage?.chatId !== currentChat?._id) {
+                                              newCh['unreadMessageCount'] =  (chat?.unreadMessageCount || 0) + 1;
+                                      }
+                                      return newCh;
+                                  }
+                              return chat;
+                          });
+
+                           if(chatIndex != -1) {
+                                updatedChats.splice(chatIndex, 1);
+                                updatedChats.unshift(newCh);
+                             } // end of the chatIndex 
+
+                             dispatcher(setAllChats(updatedChats));
+                    }) // end of on
+                          
+                          // dispatcher(setSelectedChat())
+      },[]);
+
   let searchKEY = searchKey.toLowerCase().trim();
 
     function getData() {

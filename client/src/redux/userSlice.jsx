@@ -43,9 +43,6 @@ let userSlice = createSlice({
 
          setAllChats: (state, action) => { // all chats in which the currently logged in user is a participant
             state.allChats = action.payload;
-            console.log('------------------ fdfdf ------------------------------------');
-             console.log(state.allChats);
-            console.log('------------------ fdfdf ------------------------------------');
          }, 
 
          setSelectedChat: (state, action) => {
