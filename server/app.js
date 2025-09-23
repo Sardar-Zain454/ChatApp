@@ -12,6 +12,9 @@ import chatRouter from "./src/routes/chatRouter.js";
 import messageRouter from "./src/routes/messageRouter.js";
 import cors from 'cors';
 
+let onlineUsers = {};
+let duplicateOnlineUsers = {};
+
 const app = express();
 
 let corsConfiguration = {
@@ -30,9 +33,22 @@ const io = new Server(server, { // bow io knows the server above
 
 
 io.on('connection', (socket) => {
+
+        function onlineUsersStatus(usersWhoAreOnline) {
+            console.log("HERE I AM AT BACKEND");
+            io.emit('online-users', usersWhoAreOnline);
+        }
+
     socket.on('join-chat-room', (userId) => {
       socket.join(userId); // each user have its own room in which he exists separately, // if name is same everyone is added to same grp
-    console.log('User joined', userId);
+   
+    if(!onlineUsers[userId]) {
+        duplicateOnlineUsers[socket.id] = userId;
+        onlineUsers[userId] = userId;
+        onlineUsersStatus(onlineUsers);
+    }
+
+      console.log('User joined', userId);
 });
 
     socket.on('send-message', (message) => {
@@ -57,10 +73,21 @@ io.on('connection', (socket) => {
             io
             .to(userInfo.toWhichStatusShowing._id)
             .emit('showing-typing-status', userInfo);
-            })
+    })
     
-    
+
+    socket.on('disconnect', () => {
+        if(duplicateOnlineUsers[socket.id]) {
+            delete onlineUsers[duplicateOnlineUsers[socket.id]];
+            delete duplicateOnlineUsers[socket.id];
+            onlineUsersStatus(onlineUsers);
+        }
+    });
 });
+
+
+    
+
 
 
 app.use(express.json({limit: '100kb'})); // middleware to parses json bodies to js objects with a size limit of 100kb

@@ -10,9 +10,9 @@ import dayjs from 'dayjs';
 import store from './../../../redux/store.jsx';
 
 function UserList({ searchKey, socket }) {
-  let id;
+  let typingShowerId;
   let dispatcher = useDispatch();
-  let { user: currentlyLoggedUser, allUsers, allChats, selectedChat } = useSelector(state => state.userReducer); // state represent store variable in store.jsx and state.userReducer; represent pertinent initialValue (object) eventually this value injects to user variable
+  let { user: currentlyLoggedUser, allUsers, allChats, selectedChat, onlineUsersList } = useSelector(state => state.userReducer); // state represent store variable in store.jsx and state.userReducer; represent pertinent initialValue (object) eventually this value injects to user variable
 
   let getFullName = (user) => {
 
@@ -67,7 +67,7 @@ function UserList({ searchKey, socket }) {
       if(!email) return "no email found!";
     return email.toLowerCase();
   }
-  let getLastMessageTimeStamp = (user) => {
+    let getLastMessageTimeStamp = (user) => {
       let chat = allChats.find(chat => {
         return (chat.members.map(m => m._id).includes(user._id) &&
         chat.members.map(m => m._id).includes(currentlyLoggedUser._id))
@@ -186,22 +186,19 @@ function UserList({ searchKey, socket }) {
           .off('showing-typing-status')
           .on('showing-typing-status', (userInfo)=>{
             if(userInfo?.toWhichStatusShowing?._id === currentlyLoggedUser?._id) {
-                if(id) {
-                    clearTimeout(id);
+                if(typingShowerId) {
+                    clearTimeout(typingShowerId);
                 }
                   let typingElement = document.getElementById('typing-status');
                  typingElement.innerText = "typing..."
                  typingElement.classList.add('style-me-please');
 
-                  id = setTimeout(()=>{
+                  typingShowerId = setTimeout(()=>{
                         let lastMsg = getLastMessageOrEmail({_id: userInfo?.toWhichStatusShowing?._id});
                             typingElement.innerText = lastMsg;
                             typingElement.classList.remove('style-me-please');
-                 }, 1000);
-            
+                 }, 800);
             }
-
-
           });
       },[]);
 
@@ -217,6 +214,10 @@ function UserList({ searchKey, socket }) {
                     (user.firstname+" "+user.lastname).toLowerCase().trim().includes(searchKEY))
             }))
         }
+    }
+
+    let styleOnlineUser = {
+        borderRadius: '20px'
     }
 
 
@@ -235,8 +236,14 @@ function UserList({ searchKey, socket }) {
                         <div className = {selectedUser(user) ? 'selected-user' : "filtered-user"} >
                             <div className="filter-user-display">
                               {/* it is a flex and it has three direct child */}
-                                    {user.profilePic && <img src={user.profilePic} alt="Profile Pic" class="user-profile-image" /> }
-                              {!user.profilePic && <div className={selectedUser(user) ? "user-selected-avatar" : "user-default-avatar"}>
+                                    {user.profilePic && 
+                                    <img src={user.profilePic} alt="Profile Pic" class="user-profile-image"
+                                         style={onlineUsersList && onlineUsersList[user._id] && { outline: '2px solid green' } }
+                                    /> }
+                              {!user.profilePic &&
+                                    <div
+                                      style={onlineUsersList && onlineUsersList[user._id] && { outline: '3px solid green' }}
+                                    className={selectedUser(user) ? "user-selected-avatar" : "user-default-avatar"}>
                                     {getInitials(user)}
                                 </div> }
                                 <div class="filter-user-details">

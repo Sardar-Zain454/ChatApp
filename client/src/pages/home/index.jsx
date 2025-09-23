@@ -1,9 +1,11 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Header from "./components/header.jsx";
 import Sidebar from "./components/sidebar.jsx";
 import { useSelector } from "react-redux";
 import ChatArea from './components/ChatArea.jsx';
 import { io } from 'socket.io-client';
+import { updateOnlineUsers } from "../../redux/userSlice.jsx";
+import { useDispatch } from "react-redux";
 
   // that socket represent the connected client process at frontend which is connected to backend process.
     const socket = io('http://localhost:5000'); // connection request from backend if backend accept then that client is registered
@@ -14,18 +16,18 @@ import { io } from 'socket.io-client';
 // then it will render the children components which is this Home component
 
 // WHEN HOME IS MOUNTED/RENDERED CURRENT USERS AND ALL USERS ARE SUCCESSFULLY POPULATED.
+
+
 let Home = () => {
         let { user, selectedChat } = useSelector(state => state.userReducer); 
-        // Observe teh division of home component.
+        let dispatcher = useDispatch();
 
-      
-        // here we only do some general things like making a single connection socket and put that socket in a room at backend
-        // now we have to pass that socket into the different
         useEffect(() => {
-                     socket.emit('join-chat-room', user._id);
-                    // socket.emit('join-chat-room', 'buray-all-itehad');
-
-            }, []);
+                socket.emit('join-chat-room', user._id);
+                                    socket.off('online-users').on('online-users' , (usersWhoAreOnline) => {
+                                            dispatcher(updateOnlineUsers(usersWhoAreOnline));
+                        });
+        }, []);
 
     return (
         <div className="home-page">

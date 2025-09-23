@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from 'react-router-dom';
 
 
 let useConnectionHandler = () => {
@@ -10,12 +11,11 @@ let useConnectionHandler = () => {
             // whenever the componenet is routed or  true happens
 
             function onlineHandler() {
-              // refach the data again 
-              updateInternetStatus(true);
+                    updateInternetStatus(true);
             }
 
             function offlineHandler() {
-                updateInternetStatus(false);
+                    updateInternetStatus(false);
             }
 
 

@@ -1,25 +1,26 @@
 
-import { createSlice} from '@reduxjs/toolkit';
-import { 
+import { createSlice } from '@reduxjs/toolkit';
+import {
    loginThunk,
-    fetchUserThunk,
-     fetchAllUsersThunk,
-      fetchAllChatsThunk,
-      signupThunk,
-      sendMessageThunk,
-      fetchAllMessagesThunk,
-         clearAllMessagesThunk
-   } from './userThunks.js';
+   fetchUserThunk,
+   fetchAllUsersThunk,
+   fetchAllChatsThunk,
+   signupThunk,
+   sendMessageThunk,
+   fetchAllMessagesThunk,
+   clearAllMessagesThunk
+} from './userThunks.js';
 import { showLoader, hideLoader } from './loaderSlice.jsx';
 
- const initialState = {
-        user: null, // currently logged in user ==> {}
-         allUsers: null, // all users in the system except the currently logged in user ==> []
-         allChats: null, // all chats for currently logged in user ==> []
-         selectedChat: null, // chat which is currently selected by the user ==> {}
-         messages: null, // all messages for the selected chat ===> []
-         fetchInitialData: false
- }
+const initialState = {
+   user: null, // currently logged in user ==> {}
+   allUsers: null, // all users in the system except the currently logged in user ==> []
+   allChats: null, // all chats for currently logged in user ==> []
+   selectedChat: null, // chat which is currently selected by the user ==> {}
+   messages: null, // all messages for the selected chat ===> []
+   fetchInitialData: false,
+   onlineUsersList: null
+}
 
 
 let userSlice = createSlice({
@@ -27,31 +28,35 @@ let userSlice = createSlice({
    name: 'user',
    initialState: initialState,
 
-    reducers: { // contains stte updater functions
+   reducers: { // contains stte updater functions
 
-       addMessage: (state, action) => {
-             state.messages = [...state.messages, action.payload];
-       },
+      updateOnlineUsers: (state, action) => {
+         state.onlineUsersList = action.payload;
+      },
 
-         setUser: (state, action) => {
-            state.user = action.payload;
-         },
+      addMessage: (state, action) => {
+         state.messages = [...state.messages, action.payload];
+      },
 
-         setAllUsers: (state, action) => {
-            state.allUsers = action.payload;
-         },
+      setUser: (state, action) => {
+         state.user = action.payload;
+      },
 
-         setAllChats: (state, action) => { // all chats in which the currently logged in user is a participant
-            state.allChats = action.payload;
-         }, 
+      setAllUsers: (state, action) => {
+         state.allUsers = action.payload;
+      },
 
-         setSelectedChat: (state, action) => {
-             state.selectedChat = action.payload;
-         },
+      setAllChats: (state, action) => { // all chats in which the currently logged in user is a participant
+         state.allChats = action.payload;
+      },
 
-         updateInitialDataFetched: (state, action) => {
-            state.fetchInitialData = action.payload
-         }
+      setSelectedChat: (state, action) => {
+         state.selectedChat = action.payload;
+      },
+
+      updateInitialDataFetched: (state, action) => {
+         state.fetchInitialData = action.payload
+      }
    },
 
    // thunks for fetching the data
@@ -86,30 +91,30 @@ let userSlice = createSlice({
       // for fetching the currently logged in user. This runs only if token exists
       builder
          .addCase(fetchUserThunk.fulfilled, (state, action) => {
-             state.user = action.payload; // api response data
+            state.user = action.payload; // api response data
             //  state.loader = false;
          })
          .addCase(fetchUserThunk.pending, (state, action) => {
             // state.loader = true;
          })
          .addCase(fetchUserThunk.rejected, (state, action) => {
-               // localStorage.clear();
-               // state.loader = false;
+            // localStorage.clear();
+            // state.loader = false;
          })
 
       // for fetching all the users except currently logged in user.
       builder
          .addCase(fetchAllUsersThunk.fulfilled, (state, action) => {
-               state.allUsers = action.payload;
-               // state.loader = false;
+            state.allUsers = action.payload;
+            // state.loader = false;
          })
          .addCase(fetchAllUsersThunk.pending, (state, action) => {
-               // state.loader = true;
+            // state.loader = true;
          })
          .addCase(fetchAllUsersThunk.rejected, (state, action) => {
-               // state.user = null;
-               // localStorage.clear();
-               // state.loader = false;
+            // state.user = null;
+            // localStorage.clear();
+            // state.loader = false;
          })
 
       // // for fetching all the chats in which our currently logged user is involved.
@@ -129,7 +134,7 @@ let userSlice = createSlice({
             // state.loader = false;
          })
 
-         builder
+      builder
          .addCase(sendMessageThunk.fulfilled, (state, action) => {
             // state.allChats = action.payload;
          })
@@ -140,7 +145,7 @@ let userSlice = createSlice({
 
          });
 
-         builder
+      builder
          .addCase(fetchAllMessagesThunk.fulfilled, (state, action) => {
             state.messages = action.payload;
          })
@@ -151,22 +156,31 @@ let userSlice = createSlice({
             // state.messages = action.payload;
          })
 
-         builder
+      builder
          .addCase(clearAllMessagesThunk.fulfilled, (state, action) => {
-                           let chatIndex = state.allChats.findIndex(chat => chat._id === action.payload._id);
-                           if(chatIndex != -1) {
-                                state.allChats[chatIndex] = action.payload;
-                           }
+            let chatIndex = state.allChats.findIndex(chat => chat._id === action.payload._id);
+            if (chatIndex != -1) {
+               state.allChats[chatIndex] = action.payload;
+            }
          })
          .addCase(clearAllMessagesThunk.pending, (state, action) => {
             // state.messages = action.payload;
          })
          .addCase(clearAllMessagesThunk.rejected, (state, action) => {
-               // state.messages = action.payload;
+            // state.messages = action.payload;
          })
    }
 });
 
- export const { setUser, setAllUsers, setAllChats, setSelectedChat, updateInitialDataFetched, addMessage } = userSlice.actions; // state updater functions.
- export default userSlice.reducer; // this represents the initialValue object of pertinent slice like initial value object 
- 
+export const {
+   setUser,
+   setAllUsers,
+   setAllChats,
+   setSelectedChat,
+   updateInitialDataFetched,
+   addMessage,
+   updateOnlineUsers
+} = userSlice.actions; // state updater functions.
+
+export default userSlice.reducer; // this represents the initialValue object of pertinent slice like initial value object 
+

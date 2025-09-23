@@ -11,7 +11,7 @@ import store from '../../../redux/store';
 
  const ChatArea = ( { socket } ) => {
 
-  let { selectedChat, user: loggedUser, messages, allChats} = useSelector(state => state.userReducer);
+  let { selectedChat, user: loggedUser, messages, allChats, onlineUsersList} = useSelector(state => state.userReducer);
     let dispatcher = useDispatch();
     let[message, setMessage] = useState('');
 
@@ -92,13 +92,13 @@ import store from '../../../redux/store';
     setMessage('');
   }
 
-   const clearMessagesInDBAndFetchAllMessages = async (lastMessageSender) => {
+   const clearMessagesInDBAndFetchAllMessages = async (lastMessageSender, load = null) => {
 
-      // dispatcher(showLoader());
+      if(load) dispatcher(showLoader());
             if(lastMessageSender !== loggedUser._id) {
                   // first wait for message clearance at backend then tell the sender that i cleared please re-fetch for that
                   // chatId
-                        await dispatcher(clearAllMessagesThunk(selectedChat._id)); //
+                  await dispatcher(clearAllMessagesThunk(selectedChat._id)); 
                         // i must tell the sender that i seen it
                         socket.emit('get-read-status', {
                                     chatId: selectedChat._id, // for the chat the sender have to fetch the messages
@@ -106,13 +106,15 @@ import store from '../../../redux/store';
                               }
                         );
             }
+
             await dispatcher(fetchAllMessagesThunk(selectedChat._id));
-      // dispatcher(hideLoader());
+            if(load) dispatcher(hideLoader());
 }
 
             useEffect(() => {
                   let LMS = selectedChat?.lastMessage?.sender;
-                  clearMessagesInDBAndFetchAllMessages(LMS);
+                  let load = 1;
+                  clearMessagesInDBAndFetchAllMessages(LMS, load);
 
                         socket
                               .off('receive-message')
@@ -137,7 +139,8 @@ import store from '../../../redux/store';
 
                   if(chatInformation.chatId === currentChat._id) {
                               dispatcher(fetchAllMessagesThunk(chatInformation.chatId));
-                  } 
+                  }
+
             });
 
             

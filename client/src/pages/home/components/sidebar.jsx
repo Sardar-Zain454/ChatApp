@@ -14,7 +14,8 @@ import UserList from "./userList";
               setSearchKey={setSearchKey}>
           </Search>
            <UserList
-              searchKey = {searchKey} socket = {socket}>
+              searchKey = {searchKey} socket = {socket}
+              >
           </UserList>
       </div>
   )
