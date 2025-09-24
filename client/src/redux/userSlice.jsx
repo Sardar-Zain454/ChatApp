@@ -19,7 +19,7 @@ const initialState = {
    selectedChat: null, // chat which is currently selected by the user ==> {}
    messages: null, // all messages for the selected chat ===> []
    fetchInitialData: false,
-   onlineUsersList: null
+   onlineUsersList: {}
 }
 
 

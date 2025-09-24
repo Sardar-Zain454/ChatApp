@@ -44,6 +44,11 @@ function UserList({ searchKey, socket }) {
     return email.toLowerCase();
   }
   let getLastMessageOrEmail = (user) => {
+
+    // get the user that object 
+    let elementWithOldId = document.getElementById('typing-status');
+    if(elementWithOldId) { elementWithOldId.id = `${user._id}` }
+
       let chat = allChats.find(chat => {
         return (chat.members.map(m => m._id).includes(user._id) &&
         chat.members.map(m => m._id).includes(currentlyLoggedUser._id))
@@ -185,18 +190,26 @@ function UserList({ searchKey, socket }) {
           socket
           .off('showing-typing-status')
           .on('showing-typing-status', (userInfo)=>{
+
+            // no need of below if the message is routed to that tunnel(process) only.
             if(userInfo?.toWhichStatusShowing?._id === currentlyLoggedUser?._id) {
                 if(typingShowerId) {
                     clearTimeout(typingShowerId);
                 }
-                  let typingElement = document.getElementById('typing-status');
-                 typingElement.innerText = "typing..."
-                 typingElement.classList.add('style-me-please');
+                  let typingElement = document?.getElementById(userInfo?.me+'');
+
+              if (typingElement) {
+                  typingElement.innerText = "typing...";
+                  typingElement?.classList?.add('style-me-please');
+              }
+            
 
                   typingShowerId = setTimeout(()=>{
                         let lastMsg = getLastMessageOrEmail({_id: userInfo?.toWhichStatusShowing?._id});
-                            typingElement.innerText = lastMsg;
-                            typingElement.classList.remove('style-me-please');
+                           if(typingElement) {
+                                  typingElement.innerText = lastMsg;
+                                  typingElement.classList.remove('style-me-please');
+                           }
                  }, 800);
             }
           });
@@ -216,8 +229,8 @@ function UserList({ searchKey, socket }) {
         }
     }
 
-    let styleOnlineUser = {
-        borderRadius: '20px'
+    function isOnline(onlinePeople, userId) {
+      if(onlinePeople) return Object.values(onlinePeople).includes(userId);
     }
 
 
@@ -238,11 +251,11 @@ function UserList({ searchKey, socket }) {
                               {/* it is a flex and it has three direct child */}
                                     {user.profilePic && 
                                     <img src={user.profilePic} alt="Profile Pic" class="user-profile-image"
-                                         style={onlineUsersList && onlineUsersList[user._id] && { outline: '2px solid green' } }
+                                         style={isOnline(onlineUsersList, user._id)  ?  { outline: '4px solid green' }: {} }
                                     /> }
                               {!user.profilePic &&
                                     <div
-                                      style={onlineUsersList && onlineUsersList[user._id] && { outline: '3px solid green' }}
+                                      style={isOnline(onlineUsersList, user._id)  ?  { outline: '4px solid green' }: {}}
                                     className={selectedUser(user) ? "user-selected-avatar" : "user-default-avatar"}>
                                     {getInitials(user)}
                                 </div> }

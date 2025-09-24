@@ -16,6 +16,7 @@ let useConnectionHandler = () => {
 
             function offlineHandler() {
                     updateInternetStatus(false);
+                    // empty the array of online users here.
             }
 
 

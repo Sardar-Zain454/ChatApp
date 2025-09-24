@@ -140,9 +140,7 @@ import store from '../../../redux/store';
                   if(chatInformation.chatId === currentChat._id) {
                               dispatcher(fetchAllMessagesThunk(chatInformation.chatId));
                   }
-
             });
-
             
             }, [selectedChat]);
 
@@ -155,7 +153,7 @@ import store from '../../../redux/store';
 
     let handleMessageChange = (e) => {
         setMessage(e.target.value);
-        socket.emit('typing', {toWhichStatusShowing: selectedChat?.members?.find(m => m?._id !== loggedUser?._id)});
+        socket.emit('typing', {toWhichStatusShowing: selectedChat?.members?.find(m => m?._id !== loggedUser?._id), me: loggedUser._id});
     }
 
   return (

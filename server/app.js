@@ -13,7 +13,6 @@ import messageRouter from "./src/routes/messageRouter.js";
 import cors from 'cors';
 
 let onlineUsers = {};
-let duplicateOnlineUsers = {};
 
 const app = express();
 
@@ -28,24 +27,21 @@ app.use(cors(corsConfiguration));
 const server = http.createServer(app); // pass express app that explicit server which handles both express http req + websocket req
 
 const io = new Server(server, { // bow io knows the server above 
-    cors: corsConfiguration
+    cors: corsConfiguration, pingInterval: 5000, pingTimeout: 3000
 })
 
 
 io.on('connection', (socket) => {
-
         function onlineUsersStatus(usersWhoAreOnline) {
-            console.log("HERE I AM AT BACKEND");
             io.emit('online-users', usersWhoAreOnline);
         }
 
     socket.on('join-chat-room', (userId) => {
       socket.join(userId); // each user have its own room in which he exists separately, // if name is same everyone is added to same grp
    
-    if(!onlineUsers[userId]) {
-        duplicateOnlineUsers[socket.id] = userId;
-        onlineUsers[userId] = userId;
-        onlineUsersStatus(onlineUsers);
+    if(!Object.values(onlineUsers).includes(userId)) {
+            onlineUsers[socket.id] = userId;
+            onlineUsersStatus(onlineUsers);
     }
 
       console.log('User joined', userId);
@@ -76,11 +72,14 @@ io.on('connection', (socket) => {
     })
     
 
+    // when tab/browser is closed when refresh is done but upon refetching that user is again connected gotcha! and 
+    // our array is still with that array only in case of refresh, upon internet off this is also triggered(not for client and server
+    // which are on same machine). and lastly upon logout i have to explicity trigger an event from frontend which excludes that person
+    // from online users array and distribute it.
     socket.on('disconnect', () => {
-        if(duplicateOnlineUsers[socket.id]) {
-            delete onlineUsers[duplicateOnlineUsers[socket.id]];
-            delete duplicateOnlineUsers[socket.id];
-            onlineUsersStatus(onlineUsers);
+        if(Object.keys(onlineUsers).includes(socket.id)) {
+             delete onlineUsers[socket.id];
+             onlineUsersStatus(onlineUsers);
         }
     });
 });
