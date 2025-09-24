@@ -70,6 +70,17 @@ io.on('connection', (socket) => {
             .to(userInfo.toWhichStatusShowing._id)
             .emit('showing-typing-status', userInfo);
     })
+
+    socket.on('fetch-new-chat', chatdata => {
+        console.log("BACKEND CALLED PROPERLY");
+        console.log(chatdata.userId);
+        console.log("BACKEND CALLED PROPERLY");
+        socket
+            .to(chatdata.userId)
+            .emit('get-new-chat-brother', chatdata)
+    });
+
+
     
 
     // when tab/browser is closed when refresh is done but upon refetching that user is again connected gotcha! and 

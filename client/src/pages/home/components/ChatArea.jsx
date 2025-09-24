@@ -140,7 +140,10 @@ import store from '../../../redux/store';
                   if(chatInformation.chatId === currentChat._id) {
                               dispatcher(fetchAllMessagesThunk(chatInformation.chatId));
                   }
+
             });
+
+    
             
             }, [selectedChat]);
 

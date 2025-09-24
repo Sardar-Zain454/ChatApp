@@ -19,16 +19,17 @@ function UserList({ searchKey, socket }) {
        let fn = user?.firstname;
        let ln = user?.lastname;
 
-       if(!fn || !ln) return 'Anonymous User';
+      if(!fn || !ln) return 'Anonymous User';
 
-       let fname = fn.charAt(0).toUpperCase() +
-                   fn.substring(1).toLowerCase();
+      let fname = fn.charAt(0).toUpperCase() +
+                  fn.substring(1).toLowerCase();
 
-       let lname = ln.charAt(0).toUpperCase() + 
-                   ln.slice(1).toLowerCase();
+      let lname = ln.charAt(0).toUpperCase() + 
+                  ln.slice(1).toLowerCase();
   
-     return `${fname} ${lname}`;
+      return `${fname} ${lname}`;
   }
+
   let getInitials = (user) => {
        let fn = user?.firstname;
        let ln = user?.lastname;
@@ -45,9 +46,7 @@ function UserList({ searchKey, socket }) {
   }
   let getLastMessageOrEmail = (user) => {
 
-    // get the user that object 
-    let elementWithOldId = document.getElementById('typing-status');
-    if(elementWithOldId) { elementWithOldId.id = `${user._id}` }
+  
 
       let chat = allChats.find(chat => {
         return (chat.members.map(m => m._id).includes(user._id) &&
@@ -105,7 +104,14 @@ function UserList({ searchKey, socket }) {
                 const updatedChats = [...allChats, response.data];
                 dispatcher(setAllChats(updatedChats)); // one dispatch for that component so that it will re-render
                 dispatcher(setSelectedChat(response.data)); // one dispatch for ChatArea componenet so that it will also re-render.
-            } else {
+                
+                let newChat = { ...response.data };
+
+                let chatdata = {
+                  newChat, userId
+                }
+                socket.emit('fetch-new-chat', chatdata);
+              } else {
                 toast.error(response.message);
             }
 
@@ -202,8 +208,6 @@ function UserList({ searchKey, socket }) {
                   typingElement.innerText = "typing...";
                   typingElement?.classList?.add('style-me-please');
               }
-            
-
                   typingShowerId = setTimeout(()=>{
                         let lastMsg = getLastMessageOrEmail({_id: userInfo?.toWhichStatusShowing?._id});
                            if(typingElement) {
@@ -213,6 +217,15 @@ function UserList({ searchKey, socket }) {
                  }, 800);
             }
           });
+
+
+           socket.off('get-new-chat-brother').on('get-new-chat-brother', ( chatData ) => {
+               let allAvailableChats = store.getState().userReducer.allChats;
+               if(chatData.userId === currentlyLoggedUser._id) {
+                    dispatcher(setAllChats([...allAvailableChats, chatData.newChat]));
+               }
+                  console.log("all available chat");
+            });
       },[]);
 
   let searchKEY = searchKey.toLowerCase().trim();
@@ -262,7 +275,7 @@ function UserList({ searchKey, socket }) {
                                 <div class="filter-user-details">
                                     <div class="user-display-name">{getFullName(user)}</div>
                                         {/* <div class="user-display-email">{getEmail(user)}</div> */}
-                                        <div class="user-display-email" style={{ fontStyle: 'italic', marginLeft: '10px'}} id="typing-status">{getLastMessageOrEmail(user)}</div>
+                                        <div class="user-display-email" style={{ fontStyle: 'italic', marginLeft: '10px'}} id={user._id}>{getLastMessageOrEmail(user)}</div>
                                 </div>
                                    <div style={{position: 'relative'}}>
                                     <div className='last-message-timestamp'>{getLastMessageTimeStamp(user)}</div>
