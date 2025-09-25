@@ -28,5 +28,16 @@ const getAllUsers = asyncErrorHandler( async (req, res, next) => {
 
 });
 
+  const updateLastSeenTime = asyncErrorHandler ( async (userId) => {
+         await userModel.findByIdAndUpdate(userId, {
+            $set: {
+               lastseen: new Date()
+            }
+         }, {new: false});
+  })
+  
+  
+  
 
-export { getloggedUser, getAllUsers };
+
+export { getloggedUser, getAllUsers, updateLastSeenTime };

@@ -4,7 +4,7 @@ import { createNewChat } from './../../../apiCalls/chat.jsx'; // Importing creat
 import toast from 'react-hot-toast';
 import { useDispatch } from 'react-redux';
 import { hideLoader, showLoader } from '../../../redux/loaderSlice';
-import { setAllChats, setSelectedChat } from '../../../redux/userSlice.jsx';
+import { setAllChats, setAllUsers, setSelectedChat } from '../../../redux/userSlice.jsx';
 import { useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 import store from './../../../redux/store.jsx';
@@ -160,6 +160,19 @@ function UserList({ searchKey, socket }) {
   }
   async function deleteChatFromDB(evt, userId) {}
 
+    function timeFormatter(timeStamp) {
+      let now = dayjs(); // current date and time when that method is called for every message inside map function
+      let messageTime = dayjs(timeStamp); // time when message was sent/created
+  
+          if (now.isSame(messageTime, 'days')) {
+                return `Today ${dayjs(timeStamp).format('hh:mm a')}`;
+          } else if (now.subtract(1, 'days').isSame(messageTime, 'days')) {
+                return `Yesterday ${dayjs(timeStamp).format('hh:mm a')}`
+          } else {
+                return messageTime.format("MMM D YYYY, hh:mm a");
+          }
+    }
+
       useEffect(()=>{
            socket
              .off('show-unread-message')
@@ -224,8 +237,38 @@ function UserList({ searchKey, socket }) {
                if(chatData.userId === currentlyLoggedUser._id) {
                     dispatcher(setAllChats([...allAvailableChats, chatData.newChat]));
                }
-                  console.log("all available chat");
             });
+
+
+             socket.on('update-last-seen-time', (identification) => {
+                    let allOfUsersCopy = store.getState().userReducer.allUsers;
+                    let sCCC = store.getState().userReducer.selectedChat;
+
+                    let allowedUsersToBe = [ ...allOfUsersCopy ]; 
+                    let sC = { ...sCCC }; 
+
+                    let updateUsersCopy = allowedUsersToBe.map((user)=>{
+                           if(user._id === identification) {
+                              let newUser =  {
+                                  ...user, lastseen: Date.now()
+                              }
+
+                              let element = document.getElementById('login_status');
+                              let isCurrentlyOpened = sC?.members.map(m => m._id).includes(identification);
+
+                              if(element && isCurrentlyOpened) {
+                                    element.innerText = timeFormatter(newUser.lastseen);
+                              }
+
+                              return newUser;
+                           }
+                           return user;
+                    });
+                    dispatcher(setAllUsers(updateUsersCopy));
+
+             });
+
+
       },[]);
 
   let searchKEY = searchKey.toLowerCase().trim();

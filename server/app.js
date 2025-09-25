@@ -11,6 +11,7 @@ import userRouter from "./src/routes/userRouter.js";
 import chatRouter from "./src/routes/chatRouter.js";
 import messageRouter from "./src/routes/messageRouter.js";
 import cors from 'cors';
+import { updateLastSeenTime } from "./src/controllers/userController.js";
 
 let onlineUsers = {};
 
@@ -31,10 +32,19 @@ const io = new Server(server, { // bow io knows the server above
 })
 
 
+
+
+
+
 io.on('connection', (socket) => {
         function onlineUsersStatus(usersWhoAreOnline) {
             io.emit('online-users', usersWhoAreOnline);
         }
+          async function updateLastSeen(id) {
+             await updateLastSeenTime(id); // when user log off he updates its backend copies of documents
+             io.emit('update-last-seen-time', id); // when user log off then he tells all connected priocess to update my last time
+             // in their frontend copies of me now go to the frontend.
+        } 
 
     socket.on('join-chat-room', (userId) => {
       socket.join(userId); // each user have its own room in which he exists separately, // if name is same everyone is added to same grp
@@ -42,6 +52,8 @@ io.on('connection', (socket) => {
     if(!Object.values(onlineUsers).includes(userId)) {
             onlineUsers[socket.id] = userId;
             onlineUsersStatus(onlineUsers);
+            io.emit('i_am_online_boys', userId);
+            console.log("CONSOLE LOG ONLINE BOY AT BACKEND");
     }
 
       console.log('User joined', userId);
@@ -72,9 +84,6 @@ io.on('connection', (socket) => {
     })
 
     socket.on('fetch-new-chat', chatdata => {
-        console.log("BACKEND CALLED PROPERLY");
-        console.log(chatdata.userId);
-        console.log("BACKEND CALLED PROPERLY");
         socket
             .to(chatdata.userId)
             .emit('get-new-chat-brother', chatdata)
@@ -89,6 +98,7 @@ io.on('connection', (socket) => {
     // from online users array and distribute it.
     socket.on('disconnect', () => {
         if(Object.keys(onlineUsers).includes(socket.id)) {
+             updateLastSeen(onlineUsers[socket.id]);
              delete onlineUsers[socket.id];
              onlineUsersStatus(onlineUsers);
         }

@@ -6,6 +6,7 @@ import ChatArea from './components/ChatArea.jsx';
 import { io } from 'socket.io-client';
 import { updateOnlineUsers } from "../../redux/userSlice.jsx";
 import { useDispatch } from "react-redux";
+import store from "../../redux/store.jsx";
 
   // that socket represent the connected client process at frontend which is connected to backend process.
     const socket = io('http://localhost:5000'); // connection request from backend if backend accept then that client is registered
@@ -23,10 +24,21 @@ let Home = () => {
         let dispatcher = useDispatch();
 
         useEffect(() => {
+            console.log("CONSOLE LOG ONLINE BOY AT FRONTEND");
+                       socket.on('i_am_online_boys', (userId) => {
+                            let selectedChatCopy = store.getState().userReducer.selectedChat;
+                            if(!selectedChatCopy) return;
+                            let amIOnline = selectedChatCopy?.members?.map(member => member?._id).includes(userId);
+                            if(amIOnline) {
+                                    document.getElementById('login_status').innerText = "online";
+                            }
+                        });
+
                 socket.emit('join-chat-room', user._id);
                                     socket.off('online-users').on('online-users' , (usersWhoAreOnline) => {
                                             dispatcher(updateOnlineUsers(usersWhoAreOnline));
                         });
+
         }, []);
 
     return (

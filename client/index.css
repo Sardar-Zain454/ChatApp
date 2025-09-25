@@ -360,11 +360,26 @@ i{
 ********************************************************/
 .app-chat-area-header{
     padding: 10px 30px;
-    margin-bottom: 20px;
-    border-bottom: #bbb 1px solid;
+    /* margin-bottom: 20px; */
     text-align: right;
     font-weight: bold;
     color: #e74c3c;
+
+}
+
+.show_online {
+   display: flex;
+   justify-content: space-between;
+   padding-inline: 30px;
+  border-bottom: #bbb 1px solid;
+}
+
+.on_line {
+      padding: 10px 30px;
+      font-style: italic;
+      font-weight: bold;
+      color: green;
+      font-size: 14px;
 }
 
 /*******************************************************

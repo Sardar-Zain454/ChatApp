@@ -8,10 +8,9 @@ import dayjs from 'dayjs';
 import { addMessage, setAllChats } from '../../../redux/userSlice';
 import store from '../../../redux/store';
 
-
  const ChatArea = ( { socket } ) => {
 
-  let { selectedChat, user: loggedUser, messages, allChats, onlineUsersList} = useSelector(state => state.userReducer);
+  let { selectedChat, user: loggedUser, messages, allChats, onlineUsersList, allUsers} = useSelector(state => state.userReducer);
     let dispatcher = useDispatch();
     let[message, setMessage] = useState('');
 
@@ -111,6 +110,33 @@ import store from '../../../redux/store';
             if(load) dispatcher(hideLoader());
 }
 
+
+                  function checkAppositeUserIsOnline() {
+                        let requiredUser = selectedChat.members.find(member => member._id !== loggedUser._id);
+                        
+                        if(!requiredUser) return;
+
+                         if(Object.values(onlineUsersList).includes(requiredUser._id)) {
+                              document.getElementById('login_status').innerText = "online";
+                              return;
+                         } else {
+                              document.getElementById('login_status').innerText = "";
+                         }
+
+                         // means he is offline:
+                        allUsers?.forEach(U => {
+                              if(requiredUser._id === U._id) {
+
+                                    if(U.lastseen) {
+                                                let element = document.getElementById('login_status');
+                                                element.innerText = timeFormatter(U.lastseen);
+                                          }
+                                    
+                                   }
+                              })
+                  }
+
+
             useEffect(() => {
                   let LMS = selectedChat?.lastMessage?.sender;
                   let load = 1;
@@ -143,7 +169,13 @@ import store from '../../../redux/store';
 
             });
 
-    
+
+
+
+
+      if(selectedChat)  {
+            checkAppositeUserIsOnline();
+      }
             
             }, [selectedChat]);
 
@@ -162,9 +194,27 @@ import store from '../../../redux/store';
   return (
     <>
         <div class="app-chat-area">
-            <div class="app-chat-area-header">
-                {getFullName()}
-            </div>
+                  <div className="show_online">
+                        <div className="on_line" id="login_status">
+                        </div>
+                        <div class="app-chat-area-header">
+                              {getFullName()}
+                        </div>
+                  </div>
+
+
+    {/* <div> // display: flex;  padding-inline: 30px; justify-content: space-between
+  
+      <div class="app-chat-area-header">
+            {getFullName()}
+      </div>
+    </div> */}
+
+
+
+
+
+
             {/* All messages exist there below ... */}
             <div className='main-chat-area' id="main-chat-area">
                   {messages && messages?.map((message)=>{
