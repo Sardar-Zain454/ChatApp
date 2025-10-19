@@ -5,8 +5,6 @@ import  "./src/config/dbConfig.js"; // configuring the database before applicati
 import { server } from "./app.js"; // runs the whole app.js file at once then controls goes to line 3
 
 
-
-
 const PORT = process.env.PORT_NUMBER || 5000;
 
 server.listen(PORT, () => {

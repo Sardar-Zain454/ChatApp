@@ -24,7 +24,6 @@ let Home = () => {
         let dispatcher = useDispatch();
 
         useEffect(() => {
-            console.log("CONSOLE LOG ONLINE BOY AT FRONTEND");
                        socket.on('i_am_online_boys', (userId) => {
                             let selectedChatCopy = store.getState().userReducer.selectedChat;
                             if(!selectedChatCopy) return;
