@@ -7,12 +7,14 @@ import { showLoader, hideLoader } from '../../../redux/loaderSlice';
 import dayjs from 'dayjs';
 import { addMessage, setAllChats } from '../../../redux/userSlice';
 import store from '../../../redux/store';
+import EmojiPicker from 'emoji-picker-react';
 
  const ChatArea = ( { socket } ) => {
 
   let { selectedChat, user: loggedUser, messages, allChats, onlineUsersList, allUsers} = useSelector(state => state.userReducer);
     let dispatcher = useDispatch();
     let[message, setMessage] = useState('');
+    let[showEmojiPicker, updateEmojiPicker] = useState(false);
 
   let getFullName = () => {
 
@@ -33,9 +35,11 @@ import store from '../../../redux/store';
   }
 
   function timeFormatter(timeStamp) {
-    let now = dayjs(); // current date and time when that method is called for every message inside map function
+      // Like: "2025-11-08T14:32:10+00:00" (ISO 8601 format by default)
+    let now = dayjs(); // current date and time when that method is called,  for every message inside map function
     let messageTime = dayjs(timeStamp); // time when message was sent/created
 
+    // even year, month and day is same then it will returns true onkly
         if (now.isSame(messageTime, 'days')) {
               return `Today ${dayjs(timeStamp).format('hh:mm a')}`;
         } else if (now.subtract(1, 'days').isSame(messageTime, 'days')) {
@@ -70,6 +74,7 @@ import store from '../../../redux/store';
 
 
    const sendMsg = async () => {
+
     if(message.trim() === '') return;
 
     let msg = {
@@ -78,10 +83,9 @@ import store from '../../../redux/store';
               text: message.trim(),
     }
 
-
+    // this below order is very important:
      await dispatcher(sendMessageThunk(msg));
-
-       socket.emit('send-message', {
+      socket.emit('send-message', {
                   ...msg,
                   roomsToSendThatMessage: selectedChat.members.map(m => m._id),
                   read: false,
@@ -232,16 +236,34 @@ import store from '../../../redux/store';
                   )
                 })}
             </div>
+            {
+            showEmojiPicker && 
+            <div>  
+                  <EmojiPicker onEmojiClick={
+                        (eventObject) => {
+                            setMessage(message+eventObject.emoji)
+                        }
+                  }></EmojiPicker>
+            </div>
+            }
                       <div className="send-message-div">
-
                                <input 
+                               style={{border: '1px solid #e74c3c', outline: 'none'}}
                                 type="text"
                                 className="send-message-input"
                                 placeholder="Type a message..." 
                                 onChange={handleMessageChange}
+                                onFocus={
+                                    ()=>{
+                                      if(showEmojiPicker) updateEmojiPicker(!showEmojiPicker)
+                                     }
+                                }
                                 value = {message} />
                            <button onClick={sendMsg} type="button" className="fa fa-paper-plane send-message-btn"></button>
-                    
+                           
+                           <button onClick={()=>{
+                              updateEmojiPicker(!showEmojiPicker)
+                           }} type="button" className="fa fa-smile-o send-emoji-btn"></button>
                       </div>
         </div>
     </>

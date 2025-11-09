@@ -27,9 +27,9 @@ app.use(cors(corsConfiguration));
 
 const server = http.createServer(app); // pass express app that explicit server which handles both express http req + websocket req
 
-const io = new Server(server, { // bow io knows the server above 
+const io = new Server(server, { // now io knows the server above 
     cors: corsConfiguration, pingInterval: 5000, pingTimeout: 3000
-})
+});
 
 
 
@@ -40,10 +40,11 @@ io.on('connection', (socket) => {
         function onlineUsersStatus(usersWhoAreOnline) {
             io.emit('online-users', usersWhoAreOnline);
         }
+
           async function updateLastSeen(id) {
-             await updateLastSeenTime(id); // when user log off he updates its backend copies of documents
+             await updateLastSeenTime(id); // when user log off he updates its backend copies of documents.
              io.emit('update-last-seen-time', id); // when user log off then he tells all connected priocess to update my last time
-             // in their frontend copies of me now go to the frontend.
+             // in their frontend copies of me(documents) now go to the frontend.
         } 
 
     socket.on('join-chat-room', (userId) => {
@@ -53,7 +54,7 @@ io.on('connection', (socket) => {
             onlineUsers[socket.id] = userId;
             onlineUsersStatus(onlineUsers);
             io.emit('i_am_online_boys', userId);
-            console.log("CONSOLE LOG ONLINE BOY AT BACKEND");
+            // console.log("CONSOLE LOG ONLINE BOY AT BACKEND");
     }
 
       console.log('User joined', userId);
@@ -98,7 +99,7 @@ io.on('connection', (socket) => {
     // from online users array and distribute it.
     socket.on('disconnect', () => {
         if(Object.keys(onlineUsers).includes(socket.id)) {
-             updateLastSeen(onlineUsers[socket.id]);
+             updateLastSeen(onlineUsers[socket.id]); // backend
              delete onlineUsers[socket.id];
              onlineUsersStatus(onlineUsers);
         }

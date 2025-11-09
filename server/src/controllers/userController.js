@@ -32,7 +32,7 @@ const getAllUsers = asyncErrorHandler( async (req, res, next) => {
          await userModel.findByIdAndUpdate(userId, {
             $set: {
                lastseen: new Date()
-            }
+            },
          }, {new: false});
   })
   

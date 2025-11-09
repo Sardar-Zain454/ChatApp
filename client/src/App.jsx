@@ -11,6 +11,7 @@ import React from 'react';
 
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import FetchInitialData from './components/FetchInitialData.jsx';
+import Profile from './pages/profile/index.jsx';
 
 let App = () => {
 
@@ -25,15 +26,34 @@ let App = () => {
             {value && <Loader />}
             {fetchInitialData && <FetchInitialData />}
         <Routes>
+
             {/* public routes: */}
-                <Route path="/login" element={<Login />}></Route>
-                <Route path="/signup" element={<Signup/>}></Route>
+                <Route path="/login" element = {<Login />}></Route>
+                <Route path="/signup" element = {<Signup/>}></Route>
                 
-                {/* private route: */}
-            <Route  element ={<ProtectedRoute />}> 
+                {/* private routes: */}
+            <Route  element = {<ProtectedRoute />}> 
                 <Route path="/" element={<Home />}></Route>
             </Route>
+
+            <Route element = {<ProtectedRoute />}>
+                 <Route path='/profile' element = {<Profile />}></Route>
+            </Route>
+
+          
+            {/* 
+            // Second way of protection routes are
+             <Route path='/profile' element = {
+                <ProtectedRoute> 
+                    <Home /> // home is returned from protectedRoute after checking the token is exist or not
+                 </ProtectedRoute>
+            }
+            />
+            
+            */}
+
             {/* <Route path="*" element={<Default />}></Route> */}
+
         </Routes>
     </>
     )
