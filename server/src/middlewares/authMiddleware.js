@@ -9,7 +9,7 @@ import userModel from '../models/user.js';
 
   let authMiddleware = asyncErrorHandler( async (req, res, next) => {
     
-    let authHeader = req.headers.authorization;
+    let authHeader = req?.headers?.authorization;
       
     // if(!authHeader) return next(new CustomError("Authorization header missing.", 401));
     // if(!authHeader.startsWith('Bearer ')) return next(new CustomError("Invalid authorization header format.", 401)); 
@@ -24,7 +24,7 @@ import userModel from '../models/user.js';
         return next(new CustomError('You are not login. Please login again', 401));
     }
 
-  let decodedToken = jwt.verify(token, process.env.SECRET_STRING); // tempered or expired token causes errors here (JWT EXPIRT AND JWT TEMPERED ERROR)
+  let decodedToken = jwt.verify(token, process.env.SECRET_STRING); // tempered or expired token causes errors here (JWT EXPIRE AND JWT TEMPERED ERROR)
     //  console.log(verifiedToken)
      // if verified then verifiedToken = {userId: user._id, iat: timestamp(seconds), exp: timestamp(seconds) is present
 

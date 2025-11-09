@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-import { getloggedUser, getAllUsers } from "../controllers/userController.js";
+import { getloggedUser, getAllUsers, uploadProfilePic } from "../controllers/userController.js";
 
 import authMiddleware from "../middlewares/authMiddleware.js";
 
@@ -15,6 +15,8 @@ userRouter.route('/get-logged-user')
 userRouter.route('/get-all-users')
            .get(authMiddleware, getAllUsers);
 
+userRouter.route('/upload-profile-pic')
+           .post(authMiddleware, uploadProfilePic);
 
 
 

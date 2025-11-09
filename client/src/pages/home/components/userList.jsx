@@ -307,11 +307,11 @@ function UserList({ searchKey, socket }) {
                               {/* it is a flex and it has three direct child */}
                                     {user.profilePic && 
                                     <img src={user.profilePic} alt="Profile Pic" class="user-profile-image"
-                                         style={isOnline(onlineUsersList, user._id)  ?  { outline: '4px solid green' }: {} }
+                                         style={isOnline(onlineUsersList, user._id)  ?  { outline: '4px solid lightgreen' }: {} }
                                     /> }
                               {!user.profilePic &&
                                     <div
-                                      style={isOnline(onlineUsersList, user._id)  ?  { outline: '4px solid green' }: {}}
+                                      style={isOnline(onlineUsersList, user._id)  ?  { outline: '4px solid lightgreen' }: {}}
                                     className={selectedUser(user) ? "user-selected-avatar" : "user-default-avatar"}>
                                     {getInitials(user)}
                                 </div> }

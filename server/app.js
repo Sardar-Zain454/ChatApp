@@ -111,7 +111,7 @@ io.on('connection', (socket) => {
 
 
 
-app.use(express.json({limit: '100kb'})); // middleware to parses json bodies to js objects with a size limit of 100kb
+app.use(express.json({limit: '100mb'})); // middleware to parses json bodies to js objects with a size limit of 100kb
 app.use(express.static(path.join('/public')));
 
 
@@ -123,6 +123,7 @@ app.use('/api/auth', authRouter);
 
 // ENDPOINT: 127.0.0.1:5000/api/user - /get-logged-user
 // ENDPOINT: 127.0.0.1:5000/api/user - /get-all-users
+// ENDPOINT: 127.0.0.1:5000/api/user - /upload-profile-pic
 app.use('/api/user', userRouter);
 
 // ENDPOINT: 127.0.0.1:5000/api/chat - /create-new-chat
