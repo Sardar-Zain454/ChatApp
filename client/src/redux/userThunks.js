@@ -1,7 +1,7 @@
 
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { getLoggedUser, getAllUsers } from './../apiCalls/user.jsx';
-import { loginUser, signupUser } from '../apiCalls/auth.jsx';
+import { getLoggedUser, getAllUsers, uploadProfilePic } from './../apiCalls/user.jsx';
+import { loginUser, signupUser,  } from '../apiCalls/auth.jsx';
 import { getAllChats, clearingMessages } from '../apiCalls/chat.jsx';
 import { createNewMessage, fetchAllMessages } from "../apiCalls/message.jsx";
 
@@ -135,7 +135,7 @@ const fetchAllChatsThunk = createAsyncThunk('user/fetchAllChatsThunk', async (na
       }
 
    } catch (error) {
-        toast.error("Soemthing went wrong while fetching related user chats");
+        toast.error("Something went wrong while fetching related user chats");
       navigate('/login');
       return rejectWithValue(error.message); // frontend api crash message above line 113 error
    }
@@ -156,7 +156,7 @@ const fetchAllChatsThunk = createAsyncThunk('user/fetchAllChatsThunk', async (na
          return rejectWithValue(response.message) // backend api failure message
        }
    }catch(err) {
-        toast.error("Soemthing went wrong while sending the message");
+        toast.error("Something went wrong while sending the message");
       return rejectWithValue(error.message); // frontend api crash message above line 113 error
    }
  });
@@ -174,7 +174,7 @@ const fetchAllChatsThunk = createAsyncThunk('user/fetchAllChatsThunk', async (na
          return rejectWithValue(response.message) // backend api failure message
        }
    }catch(err) {
-        toast.error("Soemthing went wrong while sending the message");
+        toast.error("Something went wrong while sending the message");
       return rejectWithValue(error.message); // frontend api crash message above line 113 error
    }
  });
@@ -192,9 +192,26 @@ const fetchAllChatsThunk = createAsyncThunk('user/fetchAllChatsThunk', async (na
             return rejectWithValue(response.message) // backend api failure message
        }
    }catch(err) {
-        toast.error("Soemthing went wrong while sending the message");
+        toast.error("Something went wrong while sending the message");
          return rejectWithValue(error.message); // frontend api crash message above line 113 error
    }
+ });
+
+ const uploadProfilePicThunk = createAsyncThunk('user/uploadProfilePic', async (imageString, { rejectWithValue }) => {
+       let response = null;
+       try {
+          response = await uploadProfilePic(imageString); // failure there leads to catch which is below.
+          if(response.success) {
+            //  toast.success(response.message);
+              return response.data; // return data: user to the caller
+          } else {
+               toast.error(response.message);
+               return rejectWithValue(response.message); // backend api failure
+          }
+       } catch (err) {
+              toast.error("Something went wrong while uploading the profile picture");
+              return rejectWithValue(error.message); // frontend api crash
+       }
  });
 
 
@@ -206,5 +223,6 @@ export {
    signupThunk,
    sendMessageThunk,
    fetchAllMessagesThunk,
-   clearAllMessagesThunk
+   clearAllMessagesThunk,
+   uploadProfilePicThunk
 };

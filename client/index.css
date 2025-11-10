@@ -617,6 +617,11 @@ i{
 }
 
 /* file upload button */
+#uploadProfilePicBtn {
+    padding: 7px 25px;
+    outline: none;
+    cursor: pointer;
+}
 input[type="file"]::file-selector-button {
   border-radius: 4px;
   padding: 0 16px;

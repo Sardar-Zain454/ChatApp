@@ -305,16 +305,20 @@ function UserList({ searchKey, socket }) {
                         <div className = {selectedUser(user) ? 'selected-user' : "filtered-user"} >
                             <div className="filter-user-display">
                               {/* it is a flex and it has three direct child */}
-                                    {user.profilePic && 
-                                    <img src={user.profilePic} alt="Profile Pic" class="user-profile-image"
-                                         style={isOnline(onlineUsersList, user._id)  ?  { outline: '4px solid lightgreen' }: {} }
-                                    /> }
-                              {!user.profilePic &&
-                                    <div
-                                      style={isOnline(onlineUsersList, user._id)  ?  { outline: '4px solid lightgreen' }: {}}
-                                    className={selectedUser(user) ? "user-selected-avatar" : "user-default-avatar"}>
-                                    {getInitials(user)}
-                                </div> }
+                                    {
+                                      user.profilePic && 
+                                      <img src={user.profilePic} alt="PP" class="user-profile-image"
+                                          style={isOnline(onlineUsersList, user._id)  ?  { outline: '4px solid lightgreen' }: {} }
+                                      />
+                                    }
+                              {
+                                !user.profilePic &&
+                                  <div
+                                        style={isOnline(onlineUsersList, user._id)  ?  { outline: '4px solid lightgreen' }: {}}
+                                      className={selectedUser(user) ? "user-selected-avatar" : "user-default-avatar"}>
+                                      {getInitials(user)}
+                                </div> 
+                              }
                                 <div class="filter-user-details">
                                     <div class="user-display-name">{getFullName(user)}</div>
                                         {/* <div class="user-display-email">{getEmail(user)}</div> */}

@@ -1,18 +1,31 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from 'react-redux';
 import dayjs from "dayjs";
+import toast from 'react-hot-toast';
+import { uploadProfilePicThunk } from "./../../redux/userThunks";
+import { useDispatch } from "react-redux";
+import { showLoader, hideLoader } from "../../redux/loaderSlice";
+
+let imageBase64String = '';
 
 let Profile = () => {
 
      let { user } = useSelector(state => state.userReducer);
+     const dispatcher = useDispatch();
      let [image, setImage] = useState('');
 
      useEffect(()=>{
         if(user?.profilePic) {
             setImage(user?.profilePic);
         }
+
+        return () => {
+            imageBase64String = '';
+        }
      },
       [user]);
+
+
     
      function getInitials() {
        if(!user) {
@@ -44,7 +57,19 @@ let Profile = () => {
      }
 
      let onFileSelect = async (eventObject) => {
-         const file = eventObject.target.files[0];
+         const file = eventObject.target.files[0]; // this is the actual file selected from computer (PC).
+        if(!file) return;
+
+        if(!navigator.onLine) {
+            toast.error("Check your connection!");
+            imageBase64String = "";
+            eventObject.target.value = ''; // this is the name or path of the selected files from computer (PC).
+            return;
+        }
+
+            // file.name is the name of file profile.png
+            // file.type is the string image style like image/png
+            // file.size is the size of the file in bytes.
 
     const allowedTypes = [
         'image/jpeg', 
@@ -52,15 +77,31 @@ let Profile = () => {
         'image/webp', 
         'image/bmp', 
     ];
+
     if (!allowedTypes.includes(file.type)) {
-       // show toaster there.
+        toast.error("Please! select any image file");
+        eventObject.target.value = ''; // this is the name or path of the selected files from computer (PC).
+        return;
     }
          const reader = new FileReader(file);   // creates the object
          reader.readAsDataURL(file); // image to base 64 string
         
-        // event listener when file reading is complete
+        // event listener when file reading is complete totally.
         reader.onloadend = async () => {
-                setImage(reader.result); // base 64 is stored in image state
+                imageBase64String = reader.result;
+        }
+    }
+
+    let onFileUpload = async () => {
+
+        if(imageBase64String) {
+
+            dispatcher(showLoader());
+                await dispatcher(uploadProfilePicThunk(imageBase64String));
+            dispatcher(hideLoader());
+        imageBase64String = '';
+        } else {
+            toast("Select any image first");
         }
     }
 
@@ -91,7 +132,9 @@ let Profile = () => {
             </div>
             <div className="select-profile-pic-container">
                 <input type="file" onChange={ onFileSelect } />
+                <button type="button" id="uploadProfilePicBtn" onClick={onFileUpload}>Upload</button>
             </div>
+            
         </div>
     </div>
     )

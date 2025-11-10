@@ -22,7 +22,7 @@ function requestSuccess(request) {
 
 
     const token = localStorage.getItem('token');
-    if(token) request.headers['authorization'] = `Bearer ${localStorage.getItem('token')}`;
+    if(token) request.headers['authorization'] = `Bearer ${token}`;
     return request; // make sure request goes to next stack like backend
     // try block --> backend
 }
@@ -56,7 +56,7 @@ function responseError(error) {
   if(error.code === "ECONNABORTED") msg = "Request timeout!";
   if(error.code === "ERR_NETWORK") msg = "CORS + DNS + No internet or server unreachable error"
 
-   console.log("Error in response interceptor", error);
+//    console.log("Error in response interceptor", error);
    
 
 

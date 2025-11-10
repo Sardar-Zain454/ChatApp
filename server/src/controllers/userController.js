@@ -49,17 +49,17 @@ const getAllUsers = asyncErrorHandler( async (req, res, next) => {
         const imageURL = await cloudinary.uploader.upload(image, { folder: 'quick-chat' });
 
         // 2. store that url to mongodb
-        await userModel.findByIdAndUpdate(req.userId, {
+        const user = await userModel.findByIdAndUpdate(req.userId, {
              $set: {
-                profilePic: imageURL
+                profilePic: imageURL.secure_url
              }
         },
-        {new: false});
+        {new: true});
 
         return res.status(200).json({
             success: true,
             message: 'Profile pic uploaded successfully',
-            data: imageURL
+            data: user
         });
 
   });

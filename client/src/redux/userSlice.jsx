@@ -8,7 +8,8 @@ import {
    signupThunk,
    sendMessageThunk,
    fetchAllMessagesThunk,
-   clearAllMessagesThunk
+   clearAllMessagesThunk,
+   uploadProfilePicThunk
 } from './userThunks.js';
 import { showLoader, hideLoader } from './loaderSlice.jsx';
 
@@ -167,6 +168,18 @@ let userSlice = createSlice({
             // state.messages = action.payload;
          })
          .addCase(clearAllMessagesThunk.rejected, (state, action) => {
+            // state.messages = action.payload;
+         })
+
+      builder
+         .addCase(uploadProfilePicThunk.fulfilled, (state, action) => {
+             // state represents the redux state initial state, action.payload represent the data comes form backend
+             state.user = action.payload;
+         })
+         .addCase(uploadProfilePicThunk.pending, (state, action) => {
+            // state.messages = action.payload;
+         })
+         .addCase(uploadProfilePicThunk.rejected, (state, action) => {
             // state.messages = action.payload;
          })
    }
