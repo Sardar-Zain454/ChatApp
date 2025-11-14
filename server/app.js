@@ -17,11 +17,17 @@ let onlineUsers = {};
 
 const app = express();
 
+// const allowedOrigins = [
+//   'http://localhost:5173',       // for dev on PC
+//   'http://192.168.100.5:5173',   // your mobile IP
+// ];
+
 let corsConfiguration = {
             origin:'http://localhost:5173',
             allowedHeaders: ['authorization', 'Content-Type'],
             methods: ["GET", "POST", "PATCH", "DELETE", "PUT"]
 }; 
+
 
 app.use(cors(corsConfiguration));
 
@@ -37,26 +43,28 @@ const io = new Server(server, { // now io knows the server above
 
 
 io.on('connection', (socket) => {
-        function onlineUsersStatus(usersWhoAreOnline) {
-            io.emit('online-users', usersWhoAreOnline);
+
+        async function onlineUsersStatus(usersWhoAreOnline, userId, state) {
+            // state = on(online) or off(offline)
+             await updateLastSeenTime(userId, state);
+            io.emit('online-users', usersWhoAreOnline, userId, state);
         }
 
-          async function updateLastSeen(id) {
-             await updateLastSeenTime(id); // when user log off he updates its backend copies of documents.
-             io.emit('update-last-seen-time', id); // when user log off then he tells all connected priocess to update my last time
-             // in their frontend copies of me(documents) now go to the frontend.
-        } 
+        // async function updateLastSeen(id) {
+        //      await updateLastSeenTime(id, "off"); // when user log off he updates its backend copies of documents.
+        //      io.emit('update-last-seen-time', id); // when user log off then he tells all connected priocess to update my last time
+        //      // in their frontend copies of me(documents) now go to the frontend.
+        // }  
 
     socket.on('join-chat-room', (userId) => {
 
     if(!Object.values(onlineUsers).includes(userId)) {
-      socket.join(userId); // each user have its own room in which he exists separately, // if name is same everyone is added to same grp
+        socket.join(userId); // each user have its own room in which he exists separately, // if name is same everyone is added to same grp
             onlineUsers[socket.id] = userId;
-            onlineUsersStatus(onlineUsers);
-            io.emit('i_am_online_boys', userId);
-        console.log('User joined', userId);
+            onlineUsersStatus(onlineUsers, userId, "on");
+            // io.emit('i_am_online_boys', userId);
+            console.log('User joined', userId);
     }
-    
 });
 
     socket.on('send-message', (message) => {
@@ -106,10 +114,12 @@ io.on('connection', (socket) => {
     // which are on same machine). and lastly upon logout i have to explicity trigger an event from frontend which excludes that person
     // from online users array and distribute it.
     socket.on('disconnect', () => {
+
         if(Object.keys(onlineUsers).includes(socket.id)) {
-             updateLastSeen(onlineUsers[socket.id]); // backend
+            //  updateLastSeen(onlineUsers[socket.id]); // backend
+            let userId =  onlineUsers[socket.id];
             delete onlineUsers[socket.id];
-            onlineUsersStatus(onlineUsers);
+            onlineUsersStatus(onlineUsers, userId, "off");
         }
     });
 });

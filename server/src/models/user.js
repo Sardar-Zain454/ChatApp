@@ -43,10 +43,10 @@ const userSchema = new Schema({
     },
 
     lastseen: {
-        type: Date,
-        default: null,
+        type: String,
+        default: new Date().toISOString(),
         required: false
-    },
+},
 
     passwordChangedAt: {
         type: Date,

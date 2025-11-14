@@ -16,16 +16,21 @@ export default defineConfig({
     }
   },
 
-  // set only during development purpose: 
   server: {
-      proxy: {
-        '/backend': {
-            target: 'http://localhost:5000',
-            changeOrigin: true, // true makes Origin: http://localhost:500, Host: localhost:5000 no cors, if false then only Origin: http://localhost:5000 causes CORS maybe
-            rewrite: (path) => path.replace(/^\/backend/, "") // removes /backend where we /backend from whole path represent in target
-   }
- }
-}
+    host: true,
+    port: 5173
+  }
+
+  // set only during development purpose: 
+//   server: {
+//       proxy: {
+//         '/backend': {
+//             target: 'http://localhost:5000',
+//             changeOrigin: true, // true makes Origin: http://localhost:500, Host: localhost:5000 no cors, if false then only Origin: http://localhost:5000 causes CORS maybe
+//             rewrite: (path) => path.replace(/^\/backend/, "") // removes /backend where we /backend from whole path represent in target
+//    }
+//  }
+//}
 });
 
 

@@ -104,7 +104,7 @@ import EmojiPicker from 'emoji-picker-react';
     setMessage('');
   }
 
-   const clearMessagesInDBAndFetchAllMessages = async (lastMessageSender, load = null) => {
+      const clearMessagesInDBAndFetchAllMessages = async (lastMessageSender, load = null) => {
 
       if(load) dispatcher(showLoader());
             if(lastMessageSender !== loggedUser._id) {
@@ -124,31 +124,37 @@ import EmojiPicker from 'emoji-picker-react';
 }
 
 
-                  function checkAppositeUserIsOnline() {
-                        let requiredUser = selectedChat.members.find(member => member._id !== loggedUser._id);
-                        
-                        if(!requiredUser) return;
+      function checkAppositeUserIsOnline() {
+                        let chatBuddy = selectedChat.members.find(member => member._id !== loggedUser._id);
+
+                        let ls = chatBuddy?.lastseen;
+                        if(ls === "online") {
+                             document.getElementById('online_status').innerText = ls;
+                        }
+                        if(ls !== "online") {
+                              document.getElementById('online_status').innerText = timeFormatter(new Date(ls).getTime()) // return milliseconds timeStamp
+                        }
 
                         // reforing: take dependency away from array and put it on lastseen property right.
-                         if(Object.values(onlineUsersList).includes(requiredUser._id)) {
-                              document.getElementById('login_status').innerText = "online";
-                              return;
-                         } else {
-                              document.getElementById('login_status').innerText = "";
-                         }
+                        //  if(Object.values(onlineUsersList).includes(requiredUser._id)) {
+                        //       document.getElementById('login_status').innerText = "online";
+                        //       return;
+                        //  } else {
+                        //       document.getElementById('login_status').innerText = "";
+                        //  }
 
                          // means he is offline:
-                        allUsers?.forEach(U => {
-                              if(requiredUser._id === U._id) {
+                        // allUsers?.forEach(U => {
+                        //       if(requiredUser._id === U._id) {
 
-                                    if(U.lastseen) {
-                                                let element = document.getElementById('login_status');
-                                                element.innerText = timeFormatter(U.lastseen);
-                                    }
+                        //             if(U.lastseen) {
+                        //                         let element = document.getElementById('login_status');
+                        //                         element.innerText = timeFormatter(U.lastseen);
+                        //             }
                                     
-                                   }
-                              })
-                  }
+                        //            }
+                        //       })
+}
 
 
             useEffect(() => {
@@ -210,7 +216,7 @@ import EmojiPicker from 'emoji-picker-react';
     <>
         <div class="app-chat-area">
                   <div className="show_online">
-                        <div className="on_line" id="login_status">
+                        <div className="on_line" id="online_status">
                         </div>
                         <div class="app-chat-area-header">
                               {getFullName()}

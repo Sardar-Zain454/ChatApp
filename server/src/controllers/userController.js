@@ -4,7 +4,6 @@ import CustomError from "../Utils/CustomError.js";
 import cloudinary from './../config/cloudinary.js'
 
 const getloggedUser = asyncErrorHandler(async (req, res, next) => {
-    
     let loggedUser = await userModel.findById(req.userId).select('-password -__v'); // select excludes password and __v from the response
 
     return res.status(200).json({
@@ -29,13 +28,15 @@ const getAllUsers = asyncErrorHandler( async (req, res, next) => {
 });
 
 // its a black sheep which is not middleware
-  const updateLastSeenTime = asyncErrorHandler ( async (userId) => {
+  const updateLastSeenTime = asyncErrorHandler ( async (userId, state) => {
          await userModel.findByIdAndUpdate(userId, {
             $set: {
-               lastseen: new Date()
+                lastseen: state === "on" ? "online" : new Date().toISOString()
             },
          }, {new: false});
   });
+
+
 
 
   const uploadProfilePic = asyncErrorHandler( async (req, res, next) => {

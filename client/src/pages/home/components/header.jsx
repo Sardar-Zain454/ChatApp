@@ -43,7 +43,7 @@ const Header = ( { socket } ) => {
        
 
         {
-        !user.profilePic &&  <div
+        !user?.profilePic &&  <div
             className="logged-user-profile-pic"
             onClick={() => {
               navigate('/profile');
@@ -52,8 +52,8 @@ const Header = ( { socket } ) => {
         } 
 
        {
-       user.profilePic && 
-       <img src={user.profilePic} alt="PP"
+       user?.profilePic && 
+       <img src={user?.profilePic} alt="PP"
          className="logged-user-profile-pic"
           onClick={() => {
               navigate('/profile');

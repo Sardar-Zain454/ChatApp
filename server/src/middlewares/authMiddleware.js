@@ -8,7 +8,6 @@ import userModel from '../models/user.js';
 // in my nodejs backend
 
   let authMiddleware = asyncErrorHandler( async (req, res, next) => {
-    
     let authHeader = req?.headers?.authorization;
       
     // if(!authHeader) return next(new CustomError("Authorization header missing.", 401));

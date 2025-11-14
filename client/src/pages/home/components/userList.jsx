@@ -9,6 +9,29 @@ import { useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 import store from './../../../redux/store.jsx';
 
+
+     function timeFormatter(timeStamp) {
+      let now = dayjs(); // current date and time when that method is called for every message inside map function
+      let messageTime = dayjs(timeStamp); // time when message was sent/created
+  
+          if (now.isSame(messageTime, 'days')) {
+                return `Today ${dayjs(timeStamp).format('hh:mm a')}`;
+          } else if (now.subtract(1, 'days').isSame(messageTime, 'days')) {
+                return `Yesterday ${dayjs(timeStamp).format('hh:mm a')}`
+          } else {
+                return messageTime.format("MMM D YYYY, hh:mm a");
+          }
+    }
+
+
+
+
+
+
+
+
+
+
 function UserList({ searchKey, socket }) {
   let typingShowerId;
   let dispatcher = useDispatch();
@@ -167,18 +190,7 @@ function UserList({ searchKey, socket }) {
   }
   // async function deleteChatFromDB(evt, userId) {}
 
-    function timeFormatter(timeStamp) {
-      let now = dayjs(); // current date and time when that method is called for every message inside map function
-      let messageTime = dayjs(timeStamp); // time when message was sent/created
-  
-          if (now.isSame(messageTime, 'days')) {
-                return `Today ${dayjs(timeStamp).format('hh:mm a')}`;
-          } else if (now.subtract(1, 'days').isSame(messageTime, 'days')) {
-                return `Yesterday ${dayjs(timeStamp).format('hh:mm a')}`
-          } else {
-                return messageTime.format("MMM D YYYY, hh:mm a");
-          }
-    }
+
 
       useEffect(()=>{
            socket
@@ -351,5 +363,6 @@ function UserList({ searchKey, socket }) {
 }
 
 export default UserList;
+export { timeFormatter }
 
  
