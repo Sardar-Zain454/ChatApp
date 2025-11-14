@@ -1,5 +1,5 @@
 
-import {useEffect, useState} from 'react'
+import {useEffect, useRef, useState} from 'react'
 import { useSelector } from 'react-redux';
 import { sendMessageThunk, fetchAllMessagesThunk, clearAllMessagesThunk } from '../../../redux/userThunks';
 import { useDispatch } from 'react-redux';
@@ -15,6 +15,7 @@ import EmojiPicker from 'emoji-picker-react';
     let dispatcher = useDispatch();
     let[message, setMessage] = useState('');
     let[showEmojiPicker, updateEmojiPicker] = useState(false);
+    let inputRef = useRef(null);
 
   let getFullName = () => {
 
@@ -72,6 +73,13 @@ import EmojiPicker from 'emoji-picker-react';
         */
   }
 
+  let handleOnKeyDown = (event) => {
+      let flag = inputRef.current === document.activeElement;
+
+      if(event.key === "Enter" && flag) {
+            sendMsg();
+      }
+  }
 
    const sendMsg = async () => {
 
@@ -89,7 +97,8 @@ import EmojiPicker from 'emoji-picker-react';
                   ...msg,
                   roomsToSendThatMessage: selectedChat.members.map(m => m._id),
                   read: false,
-                  createdAt: dayjs()
+                  createdAt: dayjs(),
+                  updatedAt: dayjs()
       });
 
     setMessage('');
@@ -120,6 +129,7 @@ import EmojiPicker from 'emoji-picker-react';
                         
                         if(!requiredUser) return;
 
+                        // reforing: take dependency away from array and put it on lastseen property right.
                          if(Object.values(onlineUsersList).includes(requiredUser._id)) {
                               document.getElementById('login_status').innerText = "online";
                               return;
@@ -134,7 +144,7 @@ import EmojiPicker from 'emoji-picker-react';
                                     if(U.lastseen) {
                                                 let element = document.getElementById('login_status');
                                                 element.innerText = timeFormatter(U.lastseen);
-                                          }
+                                    }
                                     
                                    }
                               })
@@ -160,6 +170,7 @@ import EmojiPicker from 'emoji-picker-react';
                                                     clearMessagesInDBAndFetchAllMessages(incommingMessage.sender);
                                      } 
                               }
+                              // delete incommingMessage[roomsToSendThatMessage];
                               });
 
 
@@ -252,7 +263,9 @@ import EmojiPicker from 'emoji-picker-react';
                                 type="text"
                                 className="send-message-input"
                                 placeholder="Type a message..." 
-                                onChange={handleMessageChange}
+                                onChange={ handleMessageChange }
+                                ref = { inputRef }
+                                onKeyDown={ handleOnKeyDown }
                                 onFocus={
                                     ()=>{
                                       if(showEmojiPicker) updateEmojiPicker(!showEmojiPicker)

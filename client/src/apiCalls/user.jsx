@@ -23,14 +23,23 @@ let getAllUsers = async () => {
     }
 }
 
-
-let uploadProfilePic = async (image) => {
+let uploadProfilePic = async (base64ImageString) => {
        try {
-         const response = await axiosInstance.post('/api/user/upload-profile-pic', {image});
+         const response = await axiosInstance.post('/api/user/upload-profile-pic', { image: base64ImageString });
          return response.data; // json object {}
        } catch(err) {
               return err;
        }
 }
 
-export { getLoggedUser, getAllUsers, uploadProfilePic };
+
+let deleteProfilePic = async (publicIDOfCloudinaryImage) => {
+        try {
+            const response = await axiosInstance.post('/api/user/delete-profile-pic', { publicId: publicIDOfCloudinaryImage })
+            return response.data; // returns json object total
+        } catch(err) {
+           return err;
+        }
+}
+
+export { getLoggedUser, getAllUsers, uploadProfilePic, deleteProfilePic };

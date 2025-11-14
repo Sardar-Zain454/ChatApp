@@ -2,28 +2,30 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from 'react-redux';
 import dayjs from "dayjs";
 import toast from 'react-hot-toast';
-import { uploadProfilePicThunk } from "./../../redux/userThunks";
+import { uploadProfilePicThunk, deleteProfilePicThunk } from "./../../redux/userThunks";
 import { useDispatch } from "react-redux";
 import { showLoader, hideLoader } from "../../redux/loaderSlice";
+import { emitRelevantEvent } from "../home";
 
 let imageBase64String = '';
 
 let Profile = () => {
 
      let { user } = useSelector(state => state.userReducer);
+
      const dispatcher = useDispatch();
      let [image, setImage] = useState('');
+     let [profileCont, setProfileCont] = useState(false);
+
 
      useEffect(()=>{
-        if(user?.profilePic) {
-            setImage(user?.profilePic);
-        }
-
+            setImage(user?.profilePic ? user.profilePic : '');
         return () => {
             imageBase64String = '';
         }
      },
       [user]);
+
 
 
     
@@ -88,54 +90,88 @@ let Profile = () => {
         
         // event listener when file reading is complete totally.
         reader.onloadend = async () => {
-                imageBase64String = reader.result;
+                imageBase64String = reader.result;        
         }
     }
 
     let onFileUpload = async () => {
 
-        if(imageBase64String) {
-
-            dispatcher(showLoader());
-                await dispatcher(uploadProfilePicThunk(imageBase64String));
-            dispatcher(hideLoader());
-        imageBase64String = '';
-        } else {
+        if(!imageBase64String) {
             toast("Select any image first");
+            return;
         }
+
+            
+            dispatcher(showLoader());
+                const newUser = await dispatcher(uploadProfilePicThunk(imageBase64String));
+            dispatcher(hideLoader());
+        
+            document.getElementById('fileInput').value = '';
+        // VIP IF OF THE SOFTWARE
+        if(newUser.type.endsWith('/fulfilled')) 
+            emitRelevantEvent(newUser?.payload, null); 
+
+        imageBase64String = '';
+    }
+
+
+    let deleteProfilePhoto = async () => {
+        // no need to write if right.
+        dispatcher(showLoader());
+              const newUser = await dispatcher(deleteProfilePicThunk(user.publicId));
+       dispatcher(hideLoader());
+       
+       // VIP IF OF SOFTWARE
+        if(newUser.type.endsWith('/fulfilled')) 
+            emitRelevantEvent(null, newUser?.payload);
     }
 
     return (
        <div className="profile-page-container">
         <div className="profile-pic-container">
             {image ?
-             (<img src={image}
-                 alt="PP"
-                 className="user-profile-pic-upload" 
-            />):
-             <div className="user-default-profile-avatar">
-                {getInitials()}
+            ( <img src={image}
+                alt="PP"
+                className="user-profile-pic-upload" 
+            />) :
+                <div className="user-default-profile-avatar">
+                { getInitials() }
             </div>
         }
-           
+          {user?.profilePic && <button type="button" onClick={deleteProfilePhoto} className="remove_profile_btn">Remove Profile Picture</button> }
         </div>
 
         <div className="profile-info-container">
             <div className="user-profile-name">
-                <h1>{getFullName()}</h1>
+                <h1>{ getFullName() }</h1>
             </div>
             <div>
-                <b>Email: </b>{getEmail()}
+                <b>Email: </b>{ getEmail() }
             </div>
             <div>
-                <b>Account Created: </b>{accountCreationDate()}
+                <b>Account Created: </b>{ accountCreationDate() }
             </div>
             <div className="select-profile-pic-container">
-                <input type="file" onChange={ onFileSelect } />
-                <button type="button" id="uploadProfilePicBtn" onClick={onFileUpload}>Upload</button>
+
+                <input type="file" onChange={ onFileSelect } id='fileInput'/>
+
+                <button type="button" id="uploadProfilePicBtn" onClick={onFileUpload}>Upload</button> 
+
+                <button type="button" id="profileUpdateBtn" onClick={(e)=>{
+                    if(!profileCont) e.target.innerText = "Hide"
+                    else e.target.innerText = "Update Profile"
+
+                    setProfileCont(!profileCont)
+                }}>Update Profile</button> 
+
+
+                {/* Conditionally show the update profile button there. Right */}
             </div>
-            
         </div>
+           { profileCont && 
+               <div style={{border: '2px solid red', padding: '10px', textAlign: 'center'}}>Hello</div>
+            }
+        <div></div>
     </div>
     )
 }

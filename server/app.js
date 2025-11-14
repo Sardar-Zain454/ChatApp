@@ -48,16 +48,15 @@ io.on('connection', (socket) => {
         } 
 
     socket.on('join-chat-room', (userId) => {
-      socket.join(userId); // each user have its own room in which he exists separately, // if name is same everyone is added to same grp
-   
+
     if(!Object.values(onlineUsers).includes(userId)) {
+      socket.join(userId); // each user have its own room in which he exists separately, // if name is same everyone is added to same grp
             onlineUsers[socket.id] = userId;
             onlineUsersStatus(onlineUsers);
             io.emit('i_am_online_boys', userId);
-            // console.log("CONSOLE LOG ONLINE BOY AT BACKEND");
+        console.log('User joined', userId);
     }
-
-      console.log('User joined', userId);
+    
 });
 
     socket.on('send-message', (message) => {
@@ -90,6 +89,15 @@ io.on('connection', (socket) => {
             .emit('get-new-chat-brother', chatdata)
     });
 
+    // 1. Profile Picture Broadcasting.
+    socket.on('profile_picture_broadcast', (details)=>{
+        io.emit('profile_picture_multicast', details);
+    });
+
+    // 2. Delete Profile Picture Broadcasting.
+    socket.on('delete_profile_picture_broadcast', (details)=>{
+        io.emit('profile_picture_multicast', details);
+    })
 
     
 
@@ -100,8 +108,8 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => {
         if(Object.keys(onlineUsers).includes(socket.id)) {
              updateLastSeen(onlineUsers[socket.id]); // backend
-             delete onlineUsers[socket.id];
-             onlineUsersStatus(onlineUsers);
+            delete onlineUsers[socket.id];
+            onlineUsersStatus(onlineUsers);
         }
     });
 });
@@ -124,6 +132,7 @@ app.use('/api/auth', authRouter);
 // ENDPOINT: 127.0.0.1:5000/api/user - /get-logged-user
 // ENDPOINT: 127.0.0.1:5000/api/user - /get-all-users
 // ENDPOINT: 127.0.0.1:5000/api/user - /upload-profile-pic
+// ENDPOINT: 127.0.0.1:5000/api/user - /delete-profile-pic
 app.use('/api/user', userRouter);
 
 // ENDPOINT: 127.0.0.1:5000/api/chat - /create-new-chat

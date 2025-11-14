@@ -9,7 +9,8 @@ import {
    sendMessageThunk,
    fetchAllMessagesThunk,
    clearAllMessagesThunk,
-   uploadProfilePicThunk
+   uploadProfilePicThunk,
+   deleteProfilePicThunk
 } from './userThunks.js';
 import { showLoader, hideLoader } from './loaderSlice.jsx';
 
@@ -20,8 +21,9 @@ const initialState = {
    selectedChat: null, // chat which is currently selected by the user ==> {}
    messages: null, // all messages for the selected chat ===> []
    fetchInitialData: false,
-   onlineUsersList: {}
-}
+   onlineUsersList: {},
+   socketInstance: null
+};
 
 
 let userSlice = createSlice({
@@ -48,6 +50,9 @@ let userSlice = createSlice({
       },
 
       setAllChats: (state, action) => { // all chats in which the currently logged in user is a participant
+           console.log(' --------------- ----------------------------------');
+                                              console.log(action.payload);
+                                              console.log(' --------------- --------------------------------------');
          state.allChats = action.payload;
       },
 
@@ -57,6 +62,10 @@ let userSlice = createSlice({
 
       updateInitialDataFetched: (state, action) => {
          state.fetchInitialData = action.payload
+      },
+
+      setSocketInstance: (state, action) => {
+         state.socketInstance = action.payload;
       }
    },
 
@@ -182,6 +191,20 @@ let userSlice = createSlice({
          .addCase(uploadProfilePicThunk.rejected, (state, action) => {
             // state.messages = action.payload;
          })
+
+
+      builder
+         .addCase(deleteProfilePicThunk.fulfilled, (state, action) => {
+             // state represents the redux state initial state, action.payload represent the "data" comes form backend
+             state.user = action.payload;
+            //  console.log("EMMITTED");
+         })
+         .addCase(deleteProfilePicThunk.pending, (state, action) => {
+            // state.messages = action.payload;
+         })
+         .addCase(deleteProfilePicThunk.rejected, (state, action) => {
+            // state.messages = action.payload;
+         })
    }
 });
 
@@ -190,6 +213,7 @@ export const {
    setAllUsers,
    setAllChats,
    setSelectedChat,
+   setSocketInstance,
    updateInitialDataFetched,
    addMessage,
    updateOnlineUsers

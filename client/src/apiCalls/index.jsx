@@ -51,7 +51,6 @@ function responseSuccess(response) {
 // before control going to respective first come here in case of any error
 function responseError(error) {
   // Runs for any 3xx, 4xx, 5xx or any network, cors any error controls come there
-  
   let msg = error?.response?.data?.message;
   if(error.code === "ECONNABORTED") msg = "Request timeout!";
   if(error.code === "ERR_NETWORK") msg = "CORS + DNS + No internet or server unreachable error"
@@ -60,7 +59,7 @@ function responseError(error) {
    
 
 
-    error.success = false;
+    error.success = false; // causes code to return to else 
     error.message =  msg || error.message;
 
     return Promise.reject(error); // make sure the api request relevant catch block executes. and there you return error to your frontend code where it also handled.

@@ -13,6 +13,9 @@ function UserList({ searchKey, socket }) {
   let typingShowerId;
   let dispatcher = useDispatch();
   let { user: currentlyLoggedUser, allUsers, allChats, selectedChat, onlineUsersList } = useSelector(state => state.userReducer); // state represent store variable in store.jsx and state.userReducer; represent pertinent initialValue (object) eventually this value injects to user variable
+ 
+  let[lastMsg, updateLastMsg] = useState();
+
 
   let getFullName = (user) => {
 
@@ -45,12 +48,13 @@ function UserList({ searchKey, socket }) {
     return email.toLowerCase();
   }
   let getLastMessageOrEmail = (user) => {
+      let chatsCopy =  store.getState().userReducer.allChats;
+      
+        let chat = chatsCopy.find((chat) => {
+        let chatMembersIDS = chat.members.map(m => m._id);
 
-  
-
-      let chat = allChats.find(chat => {
-        return (chat.members.map(m => m._id).includes(user._id) &&
-        chat.members.map(m => m._id).includes(currentlyLoggedUser._id))
+        return (chatMembersIDS.includes(user._id) &&
+                  chatMembersIDS.includes(currentlyLoggedUser._id))
   });
  
   // chat is because if user is searched then it is not in any chat then for that we have to show email id
@@ -58,7 +62,7 @@ function UserList({ searchKey, socket }) {
   if(chat && chat.lastMessage) {
         let msg = chat.lastMessage.text;
         let msgPrefix = chat.lastMessage.sender === currentlyLoggedUser._id ? "YOU: " : "";
-
+          // console.log('message is: ', msg);
           if(msg.length >= 25) {
               return msgPrefix + msg.slice(0, 26).concat(".....");
           } else {
@@ -70,11 +74,14 @@ function UserList({ searchKey, socket }) {
     let email = user?.email;
       if(!email) return "no email found!";
     return email.toLowerCase();
+
   }
     let getLastMessageTimeStamp = (user) => {
       let chat = allChats.find(chat => {
-        return (chat.members.map(m => m._id).includes(user._id) &&
-        chat.members.map(m => m._id).includes(currentlyLoggedUser._id))
+        let chatMembersIDS = chat.members.map(m => m._id);
+
+        return (chatMembersIDS.includes(user._id) &&
+                  chatMembersIDS.includes(currentlyLoggedUser._id))
   });
 
   if(chat && chat.lastMessage) {
@@ -158,7 +165,7 @@ function UserList({ searchKey, socket }) {
     } 
       return "";
   }
-  async function deleteChatFromDB(evt, userId) {}
+  // async function deleteChatFromDB(evt, userId) {}
 
     function timeFormatter(timeStamp) {
       let now = dayjs(); // current date and time when that method is called for every message inside map function
@@ -178,30 +185,31 @@ function UserList({ searchKey, socket }) {
              .off('show-unread-message')
              .on('show-unread-message', (incommingMessage) => {
 
-                  let chatsCopy = store.getState().userReducer.allChats;
+                  let chatsCopy =  store.getState().userReducer.allChats;
                   let currentChat = store.getState().userReducer.selectedChat;
                   // let loginUser = store.getState().userReducer.user;
 
                   let chatIndex = -1, newCh;
                           let updatedChats = chatsCopy.map((chat, index) => {
                                   if(chat._id === incommingMessage.chatId) {
+                             
                                       chatIndex = index;
-                                           newCh = { ...chat }
+                                           newCh = { ...chat  }
                                            newCh['lastMessage'] = incommingMessage;
-
-                                      if(incommingMessage?.chatId !== currentChat?._id) {
+                                      if(incommingMessage?.chatId !== currentChat?._id && incommingMessage.sender !== currentlyLoggedUser._id) {
                                               newCh['unreadMessageCount'] =  (chat?.unreadMessageCount || 0) + 1;
                                       }
                                       return newCh;
                                   }
                               return chat;
+                              // return newCh;
                           });
 
                            if(chatIndex != -1) {
                                 updatedChats.splice(chatIndex, 1);
                                 updatedChats.unshift(newCh);
                              } // end of the chatIndex 
-
+                                   
                              dispatcher(setAllChats(updatedChats));
                     }) // end of on
                           // dispatcher(setSelectedChat())
@@ -222,7 +230,7 @@ function UserList({ searchKey, socket }) {
                   typingElement?.classList?.add('style-me-please');
               }
                   typingShowerId = setTimeout(()=>{
-                        let lastMsg = getLastMessageOrEmail({_id: userInfo?.toWhichStatusShowing?._id});
+                        let lastMsg = getLastMessageOrEmail({ _id: userInfo?.me });
                            if(typingElement) {
                                   typingElement.innerText = lastMsg;
                                   typingElement.classList.remove('style-me-please');

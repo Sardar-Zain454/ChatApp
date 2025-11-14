@@ -1,7 +1,7 @@
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
-const Header = () => {
+const Header = ( { socket } ) => {
 
   let { user } = useSelector(state => state.userReducer); // state represent store variable in store.jsx and state.userReducer; represent pertinent initialValue (object) eventually this value injects to user variable
   let navigate = useNavigate();
@@ -40,13 +40,27 @@ const Header = () => {
       </div>
       <div className="app-user-profile">
         <div className="logged-user-name">{getFullName()}</div>
+       
 
-        <div
+        {
+        !user.profilePic &&  <div
             className="logged-user-profile-pic"
             onClick={() => {
               navigate('/profile');
             }}> {getInitials()}
-    </div>
+          </div>
+        } 
+
+       {
+       user.profilePic && 
+       <img src={user.profilePic} alt="PP"
+         className="logged-user-profile-pic"
+          onClick={() => {
+              navigate('/profile');
+            }}
+       />
+       }
+
       </div>
     </div>
   )

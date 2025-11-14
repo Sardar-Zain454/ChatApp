@@ -1,6 +1,6 @@
 
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { getLoggedUser, getAllUsers, uploadProfilePic } from './../apiCalls/user.jsx';
+import { getLoggedUser, getAllUsers, uploadProfilePic, deleteProfilePic } from './../apiCalls/user.jsx';
 import { loginUser, signupUser,  } from '../apiCalls/auth.jsx';
 import { getAllChats, clearingMessages } from '../apiCalls/chat.jsx';
 import { createNewMessage, fetchAllMessages } from "../apiCalls/message.jsx";
@@ -22,10 +22,10 @@ const signupThunk = createAsyncThunk('user/signupThunk', async (user, { rejectWi
                toast.error(response.message); // backend api failure
                return rejectWithValue(response.message);
          }
-   } catch(error) {
+   } catch(err) {
       // frontend api crash
       toast.error("Something went wrong while Sign up!")
-         return rejectWithValue(error.message);
+         return rejectWithValue(err.message);
    }
 
 });
@@ -45,9 +45,9 @@ const loginThunk = createAsyncThunk('user/loginThunk', async (user, { rejectWith
          toast.error(response.message)
          return rejectWithValue(response.message); // backend api failure msg
       }
-   } catch (error) {
+   } catch (err) {
       toast.error("Something went wrong while login!")
-      return rejectWithValue(error.message); // frontend above line 13 api failure msg apo crash
+      return rejectWithValue(err.message); // frontend above line 13 api failure msg apo crash
    }
 });
 
@@ -76,7 +76,7 @@ const fetchUserThunk = createAsyncThunk('user/fetchUserThunk', async (navigate, 
          return rejectWithValue(response.message); // backend api failure msg
       }
 
-   } catch (error) {
+   } catch (err) {
       // ❌ Case 3: API promise crashes / throws above line 12
       // here only control came if line 12  response = await getLoggedUser(); crashes because i handle promise in that funciton
          toast.error('Something went wrong while fetching user details');
@@ -84,7 +84,7 @@ const fetchUserThunk = createAsyncThunk('user/fetchUserThunk', async (navigate, 
       // action.type = user/fetchUser/rejected of that respected thunk.
       // action.payload = error (that above catch error object);
       //   return rejectWithValue(error); wen you want you can access all information of that error also
-      return rejectWithValue(error.message); // frontend api crash message above line 49
+      return rejectWithValue(err.message); // frontend api crash message above line 49
 
    }
 
@@ -108,10 +108,10 @@ const fetchAllUsersThunk = createAsyncThunk('user/fetchAllUsersThunk', async (na
          return rejectWithValue(response.message) // backend api failure msg
       }
 
-   } catch (error) {
+   } catch (err) {
          toast.error("Something went wrong while fetching all other users details"); 
       navigate('/login');
-      return rejectWithValue(error.message); // frontend api crash message above line 86 error
+      return rejectWithValue(err.message); // frontend api crash message above line 86 error
 
    }
 });
@@ -134,10 +134,10 @@ const fetchAllChatsThunk = createAsyncThunk('user/fetchAllChatsThunk', async (na
          return rejectWithValue(response.message) // backend api failure message
       }
 
-   } catch (error) {
+   } catch (err) {
         toast.error("Something went wrong while fetching related user chats");
       navigate('/login');
-      return rejectWithValue(error.message); // frontend api crash message above line 113 error
+      return rejectWithValue(err.message); // frontend api crash message above line 113 error
    }
 });
 
@@ -157,7 +157,7 @@ const fetchAllChatsThunk = createAsyncThunk('user/fetchAllChatsThunk', async (na
        }
    }catch(err) {
         toast.error("Something went wrong while sending the message");
-      return rejectWithValue(error.message); // frontend api crash message above line 113 error
+      return rejectWithValue(err.message); // frontend api crash message above line 113 error
    }
  });
 
@@ -175,7 +175,7 @@ const fetchAllChatsThunk = createAsyncThunk('user/fetchAllChatsThunk', async (na
        }
    }catch(err) {
         toast.error("Something went wrong while sending the message");
-      return rejectWithValue(error.message); // frontend api crash message above line 113 error
+      return rejectWithValue(err.message); // frontend api crash message above line 113 error
    }
  });
 
@@ -193,7 +193,7 @@ const fetchAllChatsThunk = createAsyncThunk('user/fetchAllChatsThunk', async (na
        }
    }catch(err) {
         toast.error("Something went wrong while sending the message");
-         return rejectWithValue(error.message); // frontend api crash message above line 113 error
+         return rejectWithValue(err.message); // frontend api crash message above line 113 error
    }
  });
 
@@ -202,7 +202,7 @@ const fetchAllChatsThunk = createAsyncThunk('user/fetchAllChatsThunk', async (na
        try {
           response = await uploadProfilePic(imageString); // failure there leads to catch which is below.
           if(response.success) {
-            //  toast.success(response.message);
+             toast.success(response.message);
               return response.data; // return data: user to the caller
           } else {
                toast.error(response.message);
@@ -210,8 +210,30 @@ const fetchAllChatsThunk = createAsyncThunk('user/fetchAllChatsThunk', async (na
           }
        } catch (err) {
               toast.error("Something went wrong while uploading the profile picture");
-              return rejectWithValue(error.message); // frontend api crash
+              return rejectWithValue(err.message); // frontend api crash
        }
+ });
+
+
+ const deleteProfilePicThunk = createAsyncThunk( 'user/deleteProfilePic', async (publicId, {rejectWithValue}) => {
+     let response = null; 
+
+     try{
+            response = await deleteProfilePic(publicId);
+
+            if(!response.success) {
+               toast.error(response.message);
+               return rejectWithValue(response.message);
+            }
+
+
+             toast.success(response.message);
+            return response.data; // returns actual data field within that object.
+
+     } catch(err) {
+              toast.error("Something went wrong while deleting the profile picture");
+              return rejectWithValue(err.message); // frontend api crash
+     }
  });
 
 
@@ -224,5 +246,6 @@ export {
    sendMessageThunk,
    fetchAllMessagesThunk,
    clearAllMessagesThunk,
-   uploadProfilePicThunk
+   uploadProfilePicThunk,
+   deleteProfilePicThunk
 };

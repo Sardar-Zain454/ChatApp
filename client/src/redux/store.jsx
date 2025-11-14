@@ -6,7 +6,8 @@
        reducer: {
             loaderReducer: loaderReducer, // contains initialValue object of its state
             userReducer: userReducer, // contains the initialValue object of its state
-      } 
+      } ,
+  
  });
 
  export default store;

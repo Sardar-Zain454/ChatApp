@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-import { getloggedUser, getAllUsers, uploadProfilePic } from "../controllers/userController.js";
+import { getloggedUser, getAllUsers, uploadProfilePic, deleteProfilePic } from "../controllers/userController.js";
 
 import authMiddleware from "../middlewares/authMiddleware.js";
 
@@ -17,6 +17,10 @@ userRouter.route('/get-all-users')
 
 userRouter.route('/upload-profile-pic')
            .post(authMiddleware, uploadProfilePic);
+
+
+userRouter.route('/delete-profile-pic')
+          .post(authMiddleware, deleteProfilePic);
 
 
 

@@ -36,6 +36,12 @@ const userSchema = new Schema({
         required: false
     },
 
+    // (id of profile image in cloudinary service)
+    publicId: {
+      type: String, 
+      required: false
+    },
+
     lastseen: {
         type: Date,
         default: null,
