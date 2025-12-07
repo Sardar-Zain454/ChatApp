@@ -35,7 +35,6 @@ let Profile = () => {
        } 
        return (user?.firstname?.charAt(0)+user?.lastname?.charAt(0))?.toUpperCase();
      }
-
      let getFullName = () => {
         if(!user) {
             return "Anonymous User!"
@@ -44,14 +43,12 @@ let Profile = () => {
         let l = user?.lastname?.charAt(0)?.toUpperCase() + user?.lastname?.slice(1)?.toLowerCase();
         return `${f} ${l}`;
      }
-
      let getEmail = () => {
         if(!user) {
             return "anonymous@gmail.com";
         }
         return user?.email; 
      }
-
      let accountCreationDate = () => {
         if(!user) return "xxxx_xx_xx:xx";
         let timeStamp = dayjs(user?.createdAt);

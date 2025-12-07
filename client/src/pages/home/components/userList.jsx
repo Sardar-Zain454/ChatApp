@@ -10,7 +10,7 @@ import dayjs from 'dayjs';
 import store from './../../../redux/store.jsx';
 
 
-     function timeFormatter(timeStamp) {
+  function timeFormatter(timeStamp) {
       let now = dayjs(); // current date and time when that method is called for every message inside map function
       let messageTime = dayjs(timeStamp); // time when message was sent/created
   
@@ -134,12 +134,12 @@ function UserList({ searchKey, socket }) {
                 const updatedChats = [...allChats, response.data];
                 dispatcher(setAllChats(updatedChats)); // one dispatch for that component so that it will re-render
                 dispatcher(setSelectedChat(response.data)); // one dispatch for ChatArea componenet so that it will also re-render.
-                
                 let newChat = { ...response.data };
 
                 let chatdata = {
                   newChat, userId
                 }
+
                 socket.emit('fetch-new-chat', chatdata);
               } else {
                 toast.error(response.message);
@@ -253,7 +253,7 @@ function UserList({ searchKey, socket }) {
 
 
            socket.off('get-new-chat-brother').on('get-new-chat-brother', ( chatData ) => {
-               let allAvailableChats = store.getState().userReducer.allChats;
+               let allAvailableChats = store.getState().userReducer.allChats || [];
                if(chatData.userId === currentlyLoggedUser._id) {
                     dispatcher(setAllChats([...allAvailableChats, chatData.newChat]));
                }

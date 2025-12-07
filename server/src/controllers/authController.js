@@ -8,6 +8,7 @@ import jwt from 'jsonwebtoken';
 
 let signup = asyncErrorHandler( async (req, res, next) => {
 
+
         // you can also find it using userModel.findOne({email: req.body.email}); but in my schema i set that email must be unique
         // i handle mongoose valiudation error in globalErrorHandlingMiddleware.js for that
 
@@ -26,7 +27,6 @@ let signup = asyncErrorHandler( async (req, res, next) => {
         */
 
 
-  
 
           
 
@@ -38,8 +38,7 @@ let signup = asyncErrorHandler( async (req, res, next) => {
 })
 
 let login = asyncErrorHandler ( async (req, res, next) => {
-      
-  
+     
        let {email, password} = req.body;      
        let user = await userModel.findOne({email});
 
@@ -61,7 +60,7 @@ let login = asyncErrorHandler ( async (req, res, next) => {
   return res.status(200).json({
         success: true,
         message: "Login successfull!",
-        token,
+        token
       });
 
 })

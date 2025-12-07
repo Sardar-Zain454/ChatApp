@@ -19,18 +19,17 @@ const createNewChat = asyncErrorHandler( async (req, res, next) => {
 
 
 const getAllChats = asyncErrorHandler( async (req, res, next) => {
-         
+       console.log('ASSALALAKIUM 3');
     //   req.userId;
-    let allChats = await chatModel.find({members: {$in: req.userId}})
+       let allChats = await chatModel.find({members: {$in: req.userId}})
                                    .populate('members lastMessage')
                                    .sort({updatedAt: -1}) // which updates last (lastMessage) will be at the top.
-    res.status(200).json({
-           success: true,
-           message: "Chats fetched successfully!",
-           count: allChats.length,
-           data: allChats
-           
-    });
+       res.status(200).json({
+       success: true,
+       message: "Chats fetched successfully!",
+       count: allChats.length,
+       data: allChats
+});
 });
 
 const clearMessages = asyncErrorHandler( async (req, res, next) => {

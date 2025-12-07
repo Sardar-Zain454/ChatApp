@@ -22,20 +22,56 @@ const app = express();
 //   'http://192.168.100.5:5173',   // your mobile IP
 // ];
 
-let corsConfiguration = {
-            origin:'http://localhost:5173',
-            allowedHeaders: ['authorization', 'Content-Type'],
-            methods: ["GET", "POST", "PATCH", "DELETE", "PUT"]
-}; 
+
+ // ------------------------ previous ------------------------------------
+
+// let corsConfiguration = {
+//             origin:'http://localhost:5173',
+//             allowedHeaders: ['authorization', 'Content-Type'],
+//             methods: ["GET", "POST", "PATCH", "DELETE", "PUT"]
+// }; 
 
 
-app.use(cors(corsConfiguration));
+// app.use(cors(corsConfiguration));
 
-const server = http.createServer(app); // pass express app that explicit server which handles both express http req + websocket req
+// const server = http.createServer(app); // pass express app that explicit server which handles both express http req + websocket req
 
-const io = new Server(server, { // now io knows the server above 
-    cors: corsConfiguration, pingInterval: 5000, pingTimeout: 3000
+// const io = new Server(server, { // now io knows the server above 
+//     cors: corsConfiguration, pingInterval: 5000, pingTimeout: 3000
+// });
+
+ // ------------------------ previous ------------------------------------
+
+
+ // ------------------------ new ---------------------------------------------
+let allowedOrigins = ['http://localhost:5173', 'http://localhost:49963'];
+
+app.use(cors({
+    origin: function(origin, callback){
+        if (!origin) return callback(null, true); // allow non-browser requests
+        if (allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    allowedHeaders: ['authorization', 'Content-Type'],
+    methods: ["GET", "POST", "PATCH", "DELETE", "PUT"]
+}));
+const server = http.createServer(app); 
+
+const io = new Server(server, {
+    cors: {
+        origin: allowedOrigins,
+        methods: ["GET", "POST", "PATCH", "DELETE", "PUT"],
+        allowedHeaders: ['authorization', 'Content-Type']
+    },
+    pingInterval: 5000,
+    pingTimeout: 3000
 });
+
+// ------------------------------ new -------------------------------------------
+
 
 
 
@@ -114,12 +150,14 @@ io.on('connection', (socket) => {
     // which are on same machine). and lastly upon logout i have to explicity trigger an event from frontend which excludes that person
     // from online users array and distribute it.
     socket.on('disconnect', () => {
-
+ 
         if(Object.keys(onlineUsers).includes(socket.id)) {
+            console.log("RIGHT");
             //  updateLastSeen(onlineUsers[socket.id]); // backend
             let userId =  onlineUsers[socket.id];
             delete onlineUsers[socket.id];
             onlineUsersStatus(onlineUsers, userId, "off");
+            console.log(onlineUsers);
         }
     });
 });

@@ -18,14 +18,16 @@ import { timeFormatter } from "./components/userList.jsx";
 // then it will render the children components which is this Home component
 
 // WHEN HOME IS MOUNTED/RENDERED CURRENT USERS AND ALL USERS ARE SUCCESSFULLY POPULATED.
-export function emitRelevantEvent(user, user2) {
+export function emitRelevantEvent(user, user2, disconnectTheSocket) {
     // both (user, user2) are the logged in user.
     if(user)
         socket?.emit('profile_picture_broadcast', { dp: user?.profilePic, userId: user?._id, publicId: user?.publicId } );
     if(user2)
         socket?.emit('delete_profile_picture_broadcast', { dp: user2?.profilePic, userId: user2?._id, publicId: user2?.publicId } );
+    if(disconnectTheSocket) 
+        socket.disconnect();
+  
 }
-
 
 let Home = () => {
         let { user, selectedChat } = useSelector(state => state.userReducer); 
@@ -36,9 +38,9 @@ let Home = () => {
 
 // ------------------------------------------------------------------------------------------------------------
 //  socket.off('reconnect').on('reconnect', () => {
-                //             // socket.emit('join-chat-room', user._id);
-                //             console.log("HAN G BAHI GG");
-                // })
+//                             // socket.emit('join-chat-room', user._id);
+//                             console.log("HAN G BAHI GG KUA CHAL RAH CHARSSS CHAL RAHI HY NAH");
+//                 })
 // --------------------------------------------------------------------------------------------------------
 
 // if you use online-users in any other component then that is off when that below event is stricked.
@@ -53,8 +55,6 @@ let Home = () => {
                 allChats,
                 selectedChat: activeChat } = store?.getState()?.userReducer;
 
-                
-               
 
                 // Not for event emitter person who is getting online now:
                  if(userId !== currentlyLoggedInUser?._id) {
@@ -105,10 +105,13 @@ let Home = () => {
             dispatcher(setAllUsers(updatedUsers));
 
         } else { 
-            //  For the event emitter person who is getting online now:
+            //  For the event emitter person who is getting online now: for state="off" this else is not executed at all.
             let updatedUser = { 
                 ...currentlyLoggedInUser, 
-                lastseen: state === "on" ? "online" : new Date().toISOString() 
+                // this else part is only executed when user is offline so that 
+                // that else part is not executed. thats why it commented above code
+                // lastseen: state === "on" ? "online" : new Date().toISOString() 
+                lastseen: "online"
             }
 
             // mery related jo chats ayi unn ma bi mainn hon na right
@@ -117,7 +120,12 @@ let Home = () => {
                                 if(member?._id === userId) {
                                    return {
                                     ...member, 
-                                    lastseen: state === "on" ? "online" : new Date().toISOString()
+
+                                    // lastseen: state === "on" ? "online" : new Date().toISOString()
+                                    // this else part is only executed when user is offline so that 
+                                    // that else part is not executed. thats why it commented above code
+
+                                     lastseen: "online"
                                 }
                                 }
                     
@@ -180,6 +188,7 @@ let Home = () => {
                 dispatcher(setAllUsers(updatedUsers));
         }
     });
+
 
 }, []);
 

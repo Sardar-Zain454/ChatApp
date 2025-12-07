@@ -84,6 +84,10 @@ import EmojiPicker from 'emoji-picker-react';
    const sendMsg = async () => {
 
     if(message.trim() === '') return;
+    if(!navigator.onLine) return;
+
+    if(showEmojiPicker) updateEmojiPicker(false);
+
 
     let msg = {
               chatId: selectedChat._id,
@@ -107,7 +111,8 @@ import EmojiPicker from 'emoji-picker-react';
       const clearMessagesInDBAndFetchAllMessages = async (lastMessageSender, load = null) => {
 
       if(load) dispatcher(showLoader());
-            if(lastMessageSender !== loggedUser._id) {
+       // this last lastMessageSender is for when user creates new chat right at that time lastMessage: null:
+            if(lastMessageSender !== loggedUser._id && lastMessageSender) {
                   // first wait for message clearance at backend then tell the sender that i cleared please re-fetch for that
                   // chatId
                   await dispatcher(clearAllMessagesThunk(selectedChat._id)); 
@@ -126,10 +131,13 @@ import EmojiPicker from 'emoji-picker-react';
 
       function checkAppositeUserIsOnline() {
                         let chatBuddy = selectedChat.members.find(member => member._id !== loggedUser._id);
+                        
+                                     
+
 
                         let ls = chatBuddy?.lastseen;
                         if(ls === "online") {
-                             document.getElementById('online_status').innerText = ls;
+                              document.getElementById('online_status').innerText = ls;
                         }
                         if(ls !== "online") {
                               document.getElementById('online_status').innerText = timeFormatter(new Date(ls).getTime()) // return milliseconds timeStamp
@@ -158,7 +166,11 @@ import EmojiPicker from 'emoji-picker-react';
 
 
             useEffect(() => {
-                  let LMS = selectedChat?.lastMessage?.sender;
+
+                  // wow that below if is just pure love.
+                  if(!navigator.onLine) return;
+
+                  let LMS = selectedChat?.lastMessage?.sender || undefined;
                   let load = 1;
                   clearMessagesInDBAndFetchAllMessages(LMS, load);
 

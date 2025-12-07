@@ -5,6 +5,7 @@ import cloudinary from './../config/cloudinary.js'
 
 const getloggedUser = asyncErrorHandler(async (req, res, next) => {
     let loggedUser = await userModel.findById(req.userId).select('-password -__v'); // select excludes password and __v from the response
+    console.log('ASSALALAKIUM 1');
 
     return res.status(200).json({
         success: true,
@@ -17,7 +18,7 @@ const getloggedUser = asyncErrorHandler(async (req, res, next) => {
 const getAllUsers = asyncErrorHandler( async (req, res, next) => {
     
     let allUsers = await userModel.find({_id: {$ne: req.userId}}).select('-password -__v'); // select excludes password and __v from the response
-
+        console.log('ASSALALAKIUM 2');
     return res.status(200).json({
         success: true,
         message: "All users fetched successfully!",
@@ -42,7 +43,8 @@ const getAllUsers = asyncErrorHandler( async (req, res, next) => {
   const uploadProfilePic = asyncErrorHandler( async (req, res, next) => {
         
         const image = req.body.image; // base 64 url image
-
+       console.log("YES I AM THE PROFILE PICTURE TO BE UPLOAD");
+    //    console.log(image);
         // STORY: 
         // upload image to cloudinary and gets url (autoly return ) saves it to mongodb and return it to the frontend
 
@@ -63,6 +65,8 @@ const getAllUsers = asyncErrorHandler( async (req, res, next) => {
              }
         },
         {new: true});
+
+        console.log("DONE");
 
         return res.status(200).json({
             success: true,

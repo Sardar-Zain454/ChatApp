@@ -16,9 +16,6 @@ let devError = (error, res) => {
         
 }
 
-
-
-
 // Handling global errors in the application during production environment. operational environment.
 let prodError = (error, res) => {
 

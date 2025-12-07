@@ -29,7 +29,7 @@ const sendMessage = asyncErrorHandler(async (req, res, next) => {
         success: true,
         message: "Message sent successfully!",
         data: savedMessage
-    })
+    });
 
 });
 

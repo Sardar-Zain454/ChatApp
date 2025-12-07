@@ -11,6 +11,7 @@ function showInternetStatus(status) {
             if(status) toast.success('Internet connected 🙌🏿');
             else toast.error("Please check your connection 😔");
         }, 300);
+      
 }
 
 

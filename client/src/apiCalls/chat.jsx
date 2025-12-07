@@ -4,7 +4,6 @@ import axiosInstance from './index.jsx';
 
 let getAllChats = async () => {
 
-     console.log("ALL CHATS");
      
     try {
       let response = await axiosInstance.get('/api/chat/get-all-chats');
