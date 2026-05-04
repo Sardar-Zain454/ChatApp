@@ -47,9 +47,8 @@ It focuses on:
 * JWT-based authentication system
 * Token validation & expiration handling
 * Protected API routes with middleware
-* Role-based authorization support
-* Frontend route protection (auto-redirects)
-* Secure handling of CORS & XSS vulnerabilities
+* Frontend route protection (auto-redirects) protected at both frontend and backend
+* Understaing of handling of CORS & XSS vulnerabilities
 
 ---
 
@@ -59,7 +58,7 @@ It focuses on:
 
 * User registration & login
 * Profile picture upload/update/delete
-* Live profile updates across all connected clients
+* Live profile updates across all connected clients through socket connections
 
 ---
 
@@ -67,7 +66,6 @@ It focuses on:
 
 * One-to-one messaging
 * User search & chat discovery
-* Multi-chat handling
 * Emoji support
 
 ---
@@ -87,7 +85,7 @@ It focuses on:
 
 * Accurate message timestamps
 * Unread message counters
-* Last activity tracking
+* Last seen timestamps
 
 ---
 
@@ -103,14 +101,15 @@ It focuses on:
 
 * Clean separation of concerns
 * UI vs business logic isolation
-* Scalable state structure using Redux
+* Scalable state structure using Redux and thunks
+* Proper folder structure handling pages, components and redux store
 
 ---
 
 ## ⚙️ Realtime Engine
 
 * Built on **Socket.IO (WebSockets)**
-* Event-driven architecture
+* Event-driven architecture over polling
 * Efficient client-server synchronization
 * Understanding of **Polling vs WebSockets trade-offs**
 
@@ -149,12 +148,13 @@ npm run dev
 
 ## 📈 Key Learnings
 
-* Designing scalable realtime systems
+* Designing scalable production level realtime systems
 * Managing complex global state efficiently
-* Implementing secure authentication flows
+* Implementing secure authentication flows both at frontend and backend using protected routes
 * Structuring production-grade backend architecture
 * Handling multi-user data synchronization
 * Applying modern web security practices
+* Understanding of authorization and Cookie based authentication 
 
 
 ## ✍️ Author
