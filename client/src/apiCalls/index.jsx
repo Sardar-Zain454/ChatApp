@@ -1,7 +1,8 @@
 import axios from 'axios';
 
 const axiosInstance = axios.create({
-    baseURL: 'http://localhost:5000',
+    // baseURL: 'http://localhost:5000',
+    baseURL: 'https://quick-chat-server-dt32.onrender.com',
     // timeout: 100, // if in 100 milliseconds the request doesnot completes whether fulfilled or rejected
     headers: {
         authorization: `Bearer ${localStorage.getItem('token')}`

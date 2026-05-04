@@ -10,7 +10,8 @@ import store from "../../redux/store.jsx";
 import { timeFormatter } from "./components/userList.jsx";
 
   // that socket represent the connected client process at frontend which is connected to backend process.
-  const socket = io('http://localhost:5000'); // connection request from backend if backend accept then that client is registered
+//   const socket = io('http://localhost:5000'); // connection request from backend if backend accept then that client is registered
+  const socket = io('https://quick-chat-server-dt32.onrender.com'); // connection request from backend if backend accept then that client is registered
 // and on frontend 'connect' is raised.
 
 // first ProtectedRoute will fetch the currently logged in user details if token is available in localStorage and if any error
