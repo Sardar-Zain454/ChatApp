@@ -30,11 +30,17 @@ const getAllUsers = asyncErrorHandler( async (req, res, next) => {
 
 // its a black sheep which is not middleware
   const updateLastSeenTime = asyncErrorHandler ( async (userId, state) => {
-         await userModel.findByIdAndUpdate(userId, {
+    // console.log("I AM IN LAST SEEN TIME RIGHT");
+    // console.log(userId)
+    // console.log(state);
+    // console.log("I AM IN LAST SEEN TIME RIGHT");
+        await userModel.findByIdAndUpdate(userId, {
             $set: {
                 lastseen: state === "on" ? "online" : new Date().toISOString()
             },
          }, {new: false});
+
+        //  console.log(u);
   });
 
 

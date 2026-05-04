@@ -16,6 +16,17 @@ let signup = asyncErrorHandler( async (req, res, next) => {
         req.body.password = await bcrypt.hash(req.body.password, 10);
         req.body.email = req.body.email.toLowerCase();
 
+          let user4 = await userModel.findOne({email: req.body.email});
+
+
+
+       if(user4) {
+           return res.status(400).json({
+          success: false,
+          message: "Email Already Exist!",
+      })
+       }
+
         let user = await userModel.create(req.body);
 
         /*
@@ -34,7 +45,6 @@ let signup = asyncErrorHandler( async (req, res, next) => {
           success: true,
           message: "User registered successfully!",
       })
-      
 })
 
 let login = asyncErrorHandler ( async (req, res, next) => {
@@ -47,6 +57,7 @@ let login = asyncErrorHandler ( async (req, res, next) => {
        if(!user) {
           return next(new CustomError(`User with email ${email} does not exists! Please register first.`,400));
        }
+
 
        let isPasswordMatched = await bcrypt.compare(password, user.password)
       
@@ -67,4 +78,4 @@ let login = asyncErrorHandler ( async (req, res, next) => {
 
 
 
-export {signup, login};
+export { signup, login };

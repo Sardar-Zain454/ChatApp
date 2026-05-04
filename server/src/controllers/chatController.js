@@ -19,7 +19,7 @@ const createNewChat = asyncErrorHandler( async (req, res, next) => {
 
 
 const getAllChats = asyncErrorHandler( async (req, res, next) => {
-       console.log('ASSALALAKIUM 3');
+       // console.log('ASSALALAKIUM 3');
     //   req.userId;
        let allChats = await chatModel.find({members: {$in: req.userId}})
                                    .populate('members lastMessage')

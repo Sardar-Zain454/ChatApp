@@ -50,6 +50,9 @@ const Signup = () => {
         setButtonStatus(true);
         dispatcher(showLoader());
         await dispatcher(signupThunk(cleanUser)) // no way that error comes here
+          setUser({
+            firstname: '', lastname: '', email: '', password: ''
+        });
         dispatcher(hideLoader());
         setButtonStatus(false);
 
@@ -76,9 +79,7 @@ const Signup = () => {
 
         // }
 
-        // setUser({
-        //     firstname: '', lastname: '', email: '', password: ''
-        // });
+      
         
     }
     

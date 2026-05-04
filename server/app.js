@@ -86,6 +86,14 @@ io.on('connection', (socket) => {
             io.emit('online-users', usersWhoAreOnline, userId, state);
         }
 
+        socket.on('logout', logoutUserId => {
+            // logoutUserId has no role there hahaha 
+            let userId =  onlineUsers[socket.id];
+            delete onlineUsers[socket.id];
+            // console.log("YES I GOT TRIGGERED");
+            onlineUsersStatus(onlineUsers, userId, "off");
+        })
+
         // async function updateLastSeen(id) {
         //      await updateLastSeenTime(id, "off"); // when user log off he updates its backend copies of documents.
         //      io.emit('update-last-seen-time', id); // when user log off then he tells all connected priocess to update my last time
@@ -95,11 +103,12 @@ io.on('connection', (socket) => {
     socket.on('join-chat-room', (userId) => {
 
     if(!Object.values(onlineUsers).includes(userId)) {
+        // console.log("KKKKKKKKKKKKKKK_______________________KKKKKKKKKKKKKKKKK");
         socket.join(userId); // each user have its own room in which he exists separately, // if name is same everyone is added to same grp
             onlineUsers[socket.id] = userId;
             onlineUsersStatus(onlineUsers, userId, "on");
             // io.emit('i_am_online_boys', userId);
-            console.log('User joined', userId);
+            // console.log('User joined', userId);
     }
 });
 
@@ -152,12 +161,12 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => {
  
         if(Object.keys(onlineUsers).includes(socket.id)) {
-            console.log("RIGHT");
+            // console.log("RIGHT");
             //  updateLastSeen(onlineUsers[socket.id]); // backend
             let userId =  onlineUsers[socket.id];
             delete onlineUsers[socket.id];
             onlineUsersStatus(onlineUsers, userId, "off");
-            console.log(onlineUsers);
+            // console.log(onlineUsers);
         }
     });
 });

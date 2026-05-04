@@ -29,8 +29,10 @@ export function emitRelevantEvent(user, user2, disconnectTheSocket) {
   
 }
 
+
 let Home = () => {
         let { user, selectedChat } = useSelector(state => state.userReducer); 
+        
         let dispatcher = useDispatch();
 
     useEffect(() => {
@@ -195,10 +197,10 @@ let Home = () => {
     return (
         <div className="home-page">
              <Header socket = {socket} ></Header>
-                <div className="main-content">
+            <div className="main-content">
                     <Sidebar socket = { socket }></Sidebar>
                     { selectedChat && <ChatArea socket = { socket } /> }
-                </div>
+            </div>
         </div>
     );
 }

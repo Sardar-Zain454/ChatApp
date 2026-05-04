@@ -30,6 +30,12 @@ const Header = ( { socket } ) => {
     return `${fn.charAt(0).toUpperCase()}${ln.charAt(0).toUpperCase()}`;
   }
 
+  function logoutFromApp() {
+      localStorage.clear();
+      socket.emit('logout', user._id);
+      navigate('/login');
+  }
+
 
 
   return (
@@ -39,10 +45,7 @@ const Header = ( { socket } ) => {
         Quick Chat
       </div>
       <div className="app-user-profile">
-        <div className="logged-user-name">{getFullName()}</div>
-       
-
-        {
+           {
         !user?.profilePic &&  <div
             className="logged-user-profile-pic"
             onClick={() => {
@@ -60,6 +63,13 @@ const Header = ( { socket } ) => {
             }}
        />
        }
+        <div className="logged-user-name">{getFullName()}</div>
+        <button className='logout-button' onClick={logoutFromApp}>
+          <i className='fa fa-power-off'></i>
+        </button>
+       
+
+   
 
       </div>
     </div>
