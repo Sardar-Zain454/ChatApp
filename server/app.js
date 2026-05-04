@@ -44,7 +44,7 @@ const app = express();
 
 
  // ------------------------ new ---------------------------------------------
-let allowedOrigins = ['https://your-frontend.onrender.com', 'http://localhost:5173'];
+let allowedOrigins = ['https://quick-chat-client-rfir.onrender.com/', 'http://localhost:5173'];
 
 app.use(cors({
     origin: function(origin, callback){
