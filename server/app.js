@@ -98,6 +98,7 @@ io.on('connection', (socket) => {
             for (const key in onlineUsers) {
                 if (onlineUsers[key] === logoutUserId) {
                     delete onlineUsers[key];
+                    
                 }
             }
             onlineUsersStatus(onlineUsers, logoutUserId, "off");
