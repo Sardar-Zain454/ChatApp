@@ -86,13 +86,31 @@ io.on('connection', (socket) => {
             io.emit('online-users', usersWhoAreOnline, userId, state);
         }
 
+        // socket.on('logout', logoutUserId => {
+        //     // logoutUserId has no role there hahaha 
+        //     let userId =  onlineUsers[socket.id];
+        //     delete onlineUsers[socket.id];
+        //     // console.log("YES I GOT TRIGGERED");
+        //     onlineUsersStatus(onlineUsers, logoutUserId, "off");
+        // })
+
         socket.on('logout', logoutUserId => {
-            // logoutUserId has no role there hahaha 
-            let userId =  onlineUsers[socket.id];
-            delete onlineUsers[socket.id];
-            // console.log("YES I GOT TRIGGERED");
-            onlineUsersStatus(onlineUsers, userId, "off");
-        })
+            for (const key in onlineUsers) {
+                if (onlineUsers[key] === logoutUserId) {
+                    delete onlineUsers[key];
+                }
+            }
+            onlineUsersStatus(onlineUsers, logoutUserId, "off");
+});
+
+
+
+
+
+
+
+
+
 
         // async function updateLastSeen(id) {
         //      await updateLastSeenTime(id, "off"); // when user log off he updates its backend copies of documents.
