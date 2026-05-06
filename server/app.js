@@ -102,8 +102,7 @@ io.on('connection', (socket) => {
                 }
             }
             onlineUsersStatus(onlineUsers, logoutUserId, "off");
-});
-
+ });
 
 
 
