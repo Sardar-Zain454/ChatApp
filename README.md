@@ -42,6 +42,8 @@ It focuses on:
 
 ---
 
+### Deployment: Render
+
 ## 🔐 Authentication & Security
 
 * JWT-based authentication system
@@ -179,5 +181,10 @@ This is not just a CRUD app — it showcases:
 * Clean and maintainable code structure
 
 ---
+
+## 📌 Online Links
+
+https://quick-chat-server-dt32.onrender.com (server)
+https://quick-chat-client-rfir.onrender.com (Client)
 
 ## 📈 One Liner: I deeply understand the complete lifecycle of a full-stack application—from a user’s click to database persistence—integrated with realtime data flow and live system updates.
